@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>홈화면</title>
+</head>
+
+<body>
+<head th:include="shared/libs.html"></head>
+
+<div id="app">
+    <top_menu ref="top_menu"></top_menu>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
+        <table class="index_table">
+            <tr>
+                <td @click="location_href('rental')">
+                    <span>대여</span>
+                </td>
+                <td @click="location_href('return')">
+                    <span>반납</span>
+                </td>
+                <td @click="">
+                    <span>개인정보변경</span>
+                </td>
+            </tr>
+            <tr>
+                <td @click="location_href('record')">
+                    사용내역
+                </td>
+                <td v-if="isAdmin" @click="location_href('setting')">
+                    <span>관리자메뉴</span>
+                </td>
+                <td v-else></td>
+
+                <td v-if="isAdmin">
+                    책 관리
+                </td>
+                <td v-else></td>
+            </tr>
+            <tr>
+                <td v-if="isAdmin" @click="location_href('qr_maker')">QR생성</td>
+                <td v-else></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+<style>
+    .index_table {
+        border-collapse: collapse;
+        width: 600px;
+        text-align: center;
+        border-top: 1px solid black;
+        border-right: 1px solid black;
+    }
+    .index_table tr td {
+        cursor: pointer;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        width: 150px;
+        height: 150px;
+    }
+    .index_table tr td:hover {
+        background-color: #eee !important;
+    }
+</style>
+
+<script>
+     const app = Vue.createApp({
+        data: function() {
+            return {
+                isAdmin: false,
+            }
+        },
+        methods: {
+            location_href: function(url) {
+                window.location.href = '/' + url;
+            }
+        },
+        mounted: function() {
+            var vm = this;
+            vm.isAdmin = vm.$refs.top_menu.account.isAdmin;
+        },
+    })
+
+
+</script>
+<head th:include="shared/top_menu.html"></head>
+<script>
+    app.use(Quasar);
+    app.mount('#app');
+</script>

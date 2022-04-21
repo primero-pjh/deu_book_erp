@@ -1,0 +1,46 @@
+controller 정의>
+	https://velog.io/@dsunni/Spring-Boot-%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9B%B9-MVC-Thymeleaf
+
+
+- dao> Mapper가 can not find symbol error가 뜨는 거)
+	pom 에 depengency 가 잘못 정의되어 있었음
+
+- controller, dao, dto, mapper 정의(MVC + DAO,DTO)
+	https://jonny-cho.github.io/spring/2019/01/21/springbootmysql/
+
+- db connection 이 안된이유)
+	1. username, password가 잘못되었음
+	2. xshell을 켜놔도 localhost로 연결하지 못함
+
+- null에 관한 문제점
+	1. first()를 사용할 때 해당 값이 없으면 null 에러가 뜸
+		=> 해결방안으로 count(*) 사용 int로 판단해서 잇으면 다시 들고오게
+	2. List<T>에 관한 null은 아직 테스트해보지 않았음
+
+- db field 수정에 관한 문제점
+	1. Mapper, DTO를 정의한 상태에서 DB field가 수정되면 값을 이상하게 가져옴
+		=> Mapper, DTO를 지우고 다시 쓰면 해결됐음
+
+- 대여에 관한 logic 재수정
+	1. 만약 대여를 했던 책을 다시 대여를 하는 상황이 온다면 accountId, bookId가 pk가 될 수 없음.
+	2. 대여날짜(rentalDate)까지 key로 써야하는 상황
+	3. 
+
+- 재고에 관한 logic
+	1. 우선 deu-b-erp에선 재고가 무조건 1개라고 가정한다 따라서 bookId+name이 고유키가 된다
+		(재고가 있다생각하면 같은 책이여도 bookId가 다를 수 있다)
+
+- 연체관리에 관한 logic
+	1. cron을 이용해 매일 밤 12시에 연체를 확인해서 기록한다.
+	2. 이때 시간개념은 쓰지 않는다(이는 대여와 반납 시에 복잡한 logic이 생성된다)
+
+
+-대여에 관한 logic
+	1.  이미 대여한 책이라면 대여할 수 없다 -> accountId + bookId 의 최근순으로 정렬 후, 마지막 record를 가져와서 구분.
+	2. 연체기록이 있고 7일(OverDueDate)가 지나지 않았으면 대여할 수 없다.
+	3. 현재(연체X, 반납X) 대여수가 3권(MaxRentalCount) 이상이면 대여할 수 없다.
+
+-반납에 관한 logic
+	1. 대여한 책이 없으면 반납할 수 없다.
+	2. 반납예정일이 지났을 때		=> 연체기록남김
+	3. 반납예정일이 지나지 않았을 때	=> 연체기록안남김

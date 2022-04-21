@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.bap.dao.SettingMapper">
+    <select id="SettingReadAll" resultType="com.example.bap.dto.SettingDto">
+        select * from settings
+    </select>
+    <select id="SettingReadOne" resultType="com.example.bap.dto.SettingDto" parameterType="int">
+        select * from settings where settingId=#{settingId}
+    </select>
+    <select id="SettingReadOneWithKeyword" resultType="com.example.bap.dto.SettingDto" parameterType="String">
+        select * from settings where keyword=#{keyword}
+    </select>
+    <update id="SettingSave" parameterType="com.example.bap.dto.SettingDto">
+        update settings set value=#{value} where settingId=#{settingId}
+    </update>
+</mapper>

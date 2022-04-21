@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>로그인</title>
+    </head>
+    <body>
+    <div id="app">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
+            <table class="index_table">
+                <tr>
+                    <td>
+                        대출
+                    </td>
+                    <td>
+                        반납
+                    </td>
+                    <td>
+                        설정
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {{ message }}
+    </div>
+    </body>
+</html>
+
+
+<style>
+    .index_table {
+        border-collapse: collapse;
+        width: 600px;
+        text-align: center;
+        border-top: 1px solid black;
+        border-right: 1px solid black;
+    }
+    .index_table tr td {
+        cursor: pointer;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        width: 150px;
+        height: 150px;
+    }
+    .index_table tr td:hover {
+        background-color: #eee !important;
+    }
+</style>
+
+<script>
+    Vue.createApp({
+        data: function() {
+            return {
+
+            }
+        },
+        methods: {
+            load: function() {
+                var vm = this;
+            },
+        },
+        mounted: function() {
+            console.log("load");
+        },
+    }).mount('#app');
+</script>

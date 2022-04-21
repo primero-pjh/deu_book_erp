@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>대여</title>
+</head>
+
+<body>
+<head th:include="shared/libs.html"></head>
+<script src="static/js/jsQR.js"></script>
+<div id="app">
+    <top_menu ref="top_menu"></top_menu>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
+        <div v-if="is_error" style="width: 100%; text-align: center;" class="q-mb-sm">
+            <q-btn @click="reload" class="q-mr-sm">새로고침</q-btn>
+            <q-btn @click="location_href('')">홈화면 이동</q-btn>
+        </div>
+        <div class="" style="width:100%;" v-if="is_check == false">
+            <div id="test" style="display: none;">
+                <h1>QR 코드 리더</h1>
+                <div id="output">
+                    <div id="outputMessage">
+                        QR코드를 카메라에 노출시켜 주세요
+                    </div>
+                    <div id="outputLayer" hidden>
+                        <span id="outputData"></span>
+                    </div>
+                </div>
+            </div>
+            <div style="width:100%;">
+                <div id="frame" style="position:relative;">
+                    <div id="loadingMessage"
+                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    </div>
+                    <canvas id="canvas" style="width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <q-card class="my-card">
+                <img src="https://cdn.quasar.dev/img/mountains.jpg">
+
+                <q-card-section class="q-pt-none">
+                    <div>
+                        도서번호: {{form.bookId}}
+                    </div>
+                    <div>
+                        도서명: {{form.name}}
+                    </div>
+                    <div>
+                        저자: {{form.writer}}
+                    </div>
+                    <div>
+                        출판사: {{form.publisher}}
+                    </div>
+                </q-card-section>
+            </q-card>
+            <div style="text-align: center;" class="q-mt-sm">
+                <q-btn color="primary" @click="" class="q-mr-sm" v-if="!form.status">대여불가능</q-btn>
+                <q-btn color="primary" @click="handleRental" class="q-mr-sm" v-if="is_rental==false">대여</q-btn>
+                <q-btn color="primary" @click="location_href('')" class="q-mr-sm" v-else>홈화면으로 이동</q-btn>
+                <q-btn @click="reload">다른 책 대여</q-btn>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<style>
+</style>
+    <script>
+         const app = Vue.createApp({
+            data: function() {
+                return {
+                    is_check: false,
+                    is_rental: false,
+                    is_error: false,
+                    form: new Object(),
+                }
+            },
+            methods: {
+                reload: function() {
+                    window.location.reload();
+                },
+                location_href: function(url) {
+                    window.location.href = '/' + url;
+                },
+
+                handleRental: function() {
+                    var vm = this;
+                    var form_data = new FormData();
+                    form_data.append("accountId", vm.$refs.top_menu.account.accountId);
+                    axios.post('/api/rental/' + vm.form.bookId, form_data).then(function(res) {
+                        console.log(res.data);
+                        if(res.data.success == 1) {
+                            vm.$q.notify({
+                                type: 'positive',
+                                message: res.data.message,
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                            vm.is_rental = true;
+                        } else {
+
+                            if(res.data.state == 100) {
+                                // 이미 대여한 책이라면,
+                                vm.$q.dialog({
+                                    title: '확인',
+                                    message: '이미 대여한 책입니다. 반납하시겠어요?',
+                                    cancel: true,
+                                    persistent: false,
+                                }).onOk(() => {
+                                    window.location.href = '/return';
+                                });
+                                return;
+                            } else if(res.data.state == 200) {
+                                // 연체 후 7일이 경과되지 않았다면,
+                            } else if(res.data.state == 300) {
+                                // 3권 이상을 대여 중인 회원이라면
+                            } else {
+
+                            }
+                            vm.$q.notify({
+                                type: 'negative',
+                                message: res.data.message,
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                        }
+                    });
+                },
+            },
+            mounted: function() {
+                var vm = this;
+                var video = document.createElement("video");
+                var canvasElement = document.getElementById("canvas");
+                var canvas = canvasElement.getContext("2d");
+                var loadingMessage = document.getElementById("loadingMessage");
+                var outputContainer = document.getElementById("output");
+                var outputMessage = document.getElementById("outputMessage");
+                var outputData = document.getElementById("outputData");
+
+                function drawLine(begin, end, color) {
+                    canvas.beginPath();
+                    canvas.moveTo(begin.x, begin.y);
+                    canvas.lineTo(end.x, end.y);
+                    canvas.lineWidth = 4;
+                    canvas.strokeStyle = color;
+                    canvas.stroke();
+                }
+
+                // Use facingMode: environment to attemt to get the front camera on phones
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function (stream) {
+                    video.srcObject = stream;
+                    video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                    video.play();
+                    requestAnimationFrame(tick);
+                });
+
+                function tick() {
+                    loadingMessage.innerText = "⌛ Loading video..."
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        loadingMessage.hidden = true;
+                        canvasElement.hidden = false;
+                        outputContainer.hidden = false;
+
+                        canvasElement.height = video.videoHeight;
+                        canvasElement.width = video.videoWidth;
+                        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                        var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: "dontInvert",
+                        });
+                        if (code) {
+                            drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+                            drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+                            drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+                            drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+                            outputMessage.hidden = true;
+                            outputData.parentElement.hidden = false;
+                            outputData.innerText = code.data;
+                            var json_data = JSON.parse(outputData.innerText);
+                            if(json_data.hasOwnProperty('bookId') == false || json_data.bookId == 0) {
+                                vm.$q.notify({
+                                    type: 'negative',
+                                    message: "잘못된 QR코드입니다. 관련 직원에게 문의하세요.",
+                                    position: 'bottom',
+                                    timeout: 1000,
+                                });
+                                vm.is_error = true;
+                                return;
+                            }
+                            if (json_data) {
+                                console.log("json_data:", json_data);
+                                axios.get('/api/book/' + json_data.bookId, {
+                                    params: {
+
+                                    }
+                                }).then(function(res) {
+                                    if(res.data.success) {
+                                        vm.is_check = true;
+                                        for(var k in res.data.bookDto) {
+                                            vm.form[k] = res.data.bookDto[k];
+                                        }
+                                        vm.$q.notify({
+                                            type: 'positive',
+                                            message: "책 조회 완료",
+                                            position: 'bottom',
+                                            timeout: 1000,
+                                        });
+                                    } else {
+                                        vm.$q.notify({
+                                            type: 'positive',
+                                            message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
+                                            position: 'bottom',
+                                            timeout: 1000,
+                                        });
+                                    }
+
+                                });
+                            }
+                            return;
+                        } else {
+                            outputMessage.hidden = false;
+                            outputData.parentElement.hidden = true;
+                        }
+                    }
+                    requestAnimationFrame(tick);
+                }
+            },
+        });
+</script>
+<head th:include="shared/top_menu.html"></head>
+<script>
+    app.use(Quasar);
+    app.mount('#app');
+</script>

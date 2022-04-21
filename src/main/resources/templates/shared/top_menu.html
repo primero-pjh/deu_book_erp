@@ -1,0 +1,43 @@
+<script type="text/x-template" id="top_menu">
+    <div>
+        <q-bar>
+            <q-btn dense flat icon="home" @click="location_href('')"></q-btn>
+            <div class="text-weight-bold">
+                ERP
+            </div>
+            <div class="cursor-pointer gt-md">File</div>
+            <div class="cursor-pointer gt-md">Edit</div>
+            <div class="cursor-pointer gt-md">View</div>
+            <div class="cursor-pointer gt-md">Window</div>
+            <div class="cursor-pointer gt-md">Help</div>
+            <q-space></q-space>
+        </q-bar>
+    </div>
+</script>
+
+
+<script>
+    app.component("top_menu", {
+        template: "#top_menu",
+        data() {
+            return {
+                account: {
+                    accountId: 1,
+                    userId: '',
+                    phoneNumber: '',
+                    lastLoginDate: '',
+                    status: 1,
+                    isAdmin: 1,
+                },
+            }
+        },
+        methods: {
+            location_href: function(url) {
+                window.location.href = "/" + url;
+            },
+        },
+        mounted: function() {
+            var vm = this;
+        }
+    });
+</script>
