@@ -3,13 +3,31 @@ var $p = {
         return JSON.parse(JSON.stringify(obj));
     },
     getToken: function(key) {
-        return window.sessionStorage.getItem(key);
+        let cookieKey = key + "=";
+        let result = "";
+        const cookieArr = document.cookie.split(";");
+
+        for(let i = 0; i < cookieArr.length; i++) {
+            if(cookieArr[i][0] === " ") {
+               cookieArr[i] = cookieArr[i].substring(1);
+            }
+
+            if(cookieArr[i].indexOf(cookieKey) === 0) {
+                result = cookieArr[i].slice(cookieKey.length, cookieArr[i].length);
+                return result;
+            }
+        }
+       return result;
+    },
+
+    setToken: function(key, value, expiredays) {
+        let todayDate = new Date();
+        todayDate.setDate(todayDate.getDate() + expiredays); // 현재 시각 + 일 단위로 쿠키 만료 날짜 변경
+        //todayDate.setTime(todayDate.getTime() + (expiredays * 24 * 60 * 60 * 1000)); // 밀리세컨드 단위로 쿠키 만료 날짜 변경
+        document.cookie = key + "=" + escape(value) + "; path=/; expires=" + todayDate.toGMTString() + ";";
     },
     deleteToken: function(key) {
-        window.sessionStorage.removeItem(key);
-    },
-    setToken: function(key, value) {
-        window.sessionStorage.setItem(key, value);
+        $p.setToken(key, '');
     },
     clearError: function(form) {
         for(var k in form) {

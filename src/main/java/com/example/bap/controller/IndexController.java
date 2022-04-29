@@ -13,9 +13,7 @@ import java.util.List;
 public class IndexController {
     @Autowired
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
-    public String renderSettingPage() {
-        return "/setting/index";
-    }
+    public String renderSettingPage() { return "/setting/index"; }
 
     @RequestMapping(value = "/rental", method = RequestMethod.GET)
     public String renderRentalPage() {

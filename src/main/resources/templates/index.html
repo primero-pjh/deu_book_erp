@@ -11,39 +11,41 @@
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
-        <table class="index_table">
-            <tr>
-                <td @click="location_href('rental')">
-                    <span>대여</span>
-                </td>
-                <td @click="location_href('return')">
-                    <span>반납</span>
-                </td>
-                <td @click="">
-                    <span>개인정보변경</span>
-                </td>
-            </tr>
-            <tr>
-                <td @click="location_href('record')">
-                    사용내역
-                </td>
-                <td v-if="isAdmin" @click="location_href('setting')">
-                    <span>관리자메뉴</span>
-                </td>
-                <td v-else></td>
+        <q-card class="q-pa-md">
+            <table class="index_table">
+                <tr>
+                    <td @click="location_href('rental')">
+                        <span>대여</span>
+                    </td>
+                    <td @click="location_href('return')">
+                        <span>반납</span>
+                    </td>
+                    <td @click="">
+                        <span>개인정보변경</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td @click="location_href('record')">
+                        사용내역
+                    </td>
+                    <td v-if="isAdmin" @click="location_href('setting')">
+                        <span>관리자메뉴</span>
+                    </td>
+                    <td v-else></td>
 
-                <td v-if="isAdmin">
-                    책 관리
-                </td>
-                <td v-else></td>
-            </tr>
-            <tr>
-                <td v-if="isAdmin" @click="location_href('qr_maker')">QR생성</td>
-                <td v-else></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
+                    <td v-if="isAdmin">
+                        책 관리
+                    </td>
+                    <td v-else></td>
+                </tr>
+                <tr>
+                    <td v-if="isAdmin" @click="location_href('qr_maker')">QR생성</td>
+                    <td v-else></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </q-card>
     </div>
 </div>
 </body>
@@ -83,11 +85,10 @@
         mounted: function() {
             var vm = this;
             var token = $p.getToken("jwt");
-            if(token == null) {
+            if(!token) {
                 $p.location_href('/login');
                 return;
             }
-
             vm.isAdmin = vm.$refs.top_menu.account.isAdmin;
         },
     });

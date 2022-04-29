@@ -92,7 +92,6 @@ public class AccountController {
         String userId = req.getParameter("userId");
         String password = req.getParameter("password");
         boolean isRemember = Boolean.parseBoolean(req.getParameter("isRemember"));
-        System.out.println(password);
         var error = new HashMap<String, String>();
         if(StringUtils.isNullOrEmpty(userId)) { error.put("userId", "필수입력 항목입니다."); }
         if(StringUtils.isNullOrEmpty(password)) { error.put("password", "필수입력 항목입니다."); }
@@ -110,16 +109,38 @@ public class AccountController {
             return obj;
         }
 
-        String token = createToken();
+        if(isRemember == true) {
+            String token = createToken();
+            obj.setToken(token);
+        }
 
         obj.setSuccess(1);
-        obj.setMessage("로그인 성공");
         obj.setUser(user);
         return obj;
     }
 
-    public String createToken() {
+    @RequestMapping(value = "/api/user/verityJWT", method = RequestMethod.GET)
+    public @ResponseBody ReturnData verityJWT(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        String token = req.getParameter("token");
 
+        try {
+            var result = verifyJWT(token);
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
+            System.out.println(e);
+            obj.setSuccess(0);
+            return obj;
+        } catch (Exception e) { // 그외 에러났을 경우
+            System.out.println(e);
+            obj.setSuccess(0);
+            return obj;
+        }
+
+        obj.setSuccess(1);
+        return obj;
+    }
+
+    public String createToken() {
         //Header 부분 설정
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
@@ -136,18 +157,18 @@ public class AccountController {
 
         // 토큰 Builder
         String jwt = Jwts.builder()
-//                .setHeader(headers) // Headers 설정
-//                .setClaims(payloads) // Claims 설정
-//                .setSubject("user") // 토큰 용도
-//                .setExpiration(ext) // 토큰 만료 시간 설정
-//                .signWith(SignatureAlgorithm.HS256, key.getBytes()) // HS256과 Key로 Sign
+                .setHeader(headers) // Headers 설정
+                .setClaims(payloads) // Claims 설정
+                .setSubject("user") // 토큰 용도
+                .setExpiration(ext) // 토큰 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS256, key.getBytes()) // HS256과 Key로 Sign
                 .compact(); // 토큰 생성
 
         return jwt;
     }
 
     //토큰 검증
-    public Map<String, Object> verifyJWT(String jwt) throws UnsupportedEncodingException {
+    public boolean verifyJWT(String jwt) throws UnsupportedEncodingException {
         Map<String, Object> claimMap = null;
         try {
             Claims claims = Jwts.parser()
@@ -156,15 +177,16 @@ public class AccountController {
                     .getBody();
 
             claimMap = claims;
-
             //Date expiration = claims.get("exp", Date.class);
             //String data = claims.get("data", String.class);
 
         } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
             System.out.println(e);
+            return false;
         } catch (Exception e) { // 그외 에러났을 경우
             System.out.println(e);
+            return false;
         }
-        return claimMap;
+        return true;
     }
 }

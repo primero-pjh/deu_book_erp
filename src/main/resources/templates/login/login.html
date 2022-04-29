@@ -5,7 +5,6 @@
         <title>로그인</title>
     </head>
 
-
     <body>
     <head th:include="shared/libs.html"></head>
     <div id="app">
@@ -24,6 +23,7 @@
                     <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
                              :error="form_error.password.length > 0" :error-message="form_error.password">
                     </q-input>
+<!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
                     <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
                 </q-card-section>
             </q-card>
@@ -40,11 +40,12 @@
                     userId: '',
                     password: '',
                 },
+                isRemember: true,
+
                 form_error: {
                     userId: '',
                     password: '',
-                }
-
+                },
             }
         },
         methods: {
@@ -54,13 +55,16 @@
                     params: {
                         userId: vm.form.userId,
                         password: vm.form.password,
+                        isRemember: vm.isRemember,
                     }
                 }).then(function(res) {
                     var data = res.data;
-                    console.log("data:", data);
                     vm.$q.loading.show();
                     if(data.success) {
-
+                        if(data.token) {
+                            $p.setToken("jwt", data.token, 1);
+                        }
+                        $p.location_href('/');
                     } else {
                         if(data.error) {
                             for(var k in data.error) {
@@ -82,7 +86,29 @@
         },
         mounted: function() {
             var vm = this;
-            console.log("login");
+            var token = $p.getToken("jwt");
+            console.log("token:", token);
+            if(token) {
+                 axios.get('/api/user/verityJWT', {
+                    params: {
+                        token: token,
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    vm.$q.loading.show();
+                    if(data.success) {
+                        $p.location_href('/');
+                    } else {
+                        vm.$q.dialog({
+                            title: "에러",
+                            message: "로그인 토큰이 만료되었습니다. 다시 로그인해주세요"
+                        }).onOk(() => {
+
+                        });
+                    }
+                    vm.$q.loading.hide();
+                });
+            }
         },
     });
     app.use(Quasar, {

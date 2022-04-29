@@ -1,16 +1,20 @@
 <script type="text/x-template" id="top_menu">
     <div>
-        <q-bar>
+        <q-bar style="height: 45px;" class="bg-primary text-white">
             <q-btn dense flat icon="home" @click="location_href('')"></q-btn>
             <div class="text-weight-bold">
-                ERP
+                deuERP
             </div>
-            <div class="cursor-pointer gt-md">File</div>
-            <div class="cursor-pointer gt-md">Edit</div>
-            <div class="cursor-pointer gt-md">View</div>
-            <div class="cursor-pointer gt-md">Window</div>
-            <div class="cursor-pointer gt-md">Help</div>
             <q-space></q-space>
+            <q-btn :label="account.userId" icon="person" class="text-white">
+                <q-menu>
+                    <q-list style="min-width: 100px">
+                        <q-item clickable v-close-popup dense>
+                            <q-item-section @click="handleLogout">로그아웃</q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
+            </q-btn>
         </q-bar>
     </div>
 </script>
@@ -23,7 +27,7 @@
             return {
                 account: {
                     accountId: 1,
-                    userId: '',
+                    userId: '123',
                     phoneNumber: '',
                     lastLoginDate: '',
                     status: 1,
@@ -34,6 +38,11 @@
         methods: {
             location_href: function(url) {
                 window.location.href = "/" + url;
+            },
+            handleLogout: function() {
+                var vm = this;
+                $p.deleteToken("jwt");
+                $p.location_href('/login');
             },
         },
         mounted: function() {
