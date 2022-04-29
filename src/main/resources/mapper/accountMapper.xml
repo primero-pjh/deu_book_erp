@@ -4,4 +4,16 @@
     <select id="account_list" resultType="com.example.bap.dto.AccountDto">
         select * from accounts
     </select>
+    <select id="get_user" resultType="com.example.bap.dto.AccountDto" parameterType="String">
+        select * from accounts where userId=#{id} and password=#{pw}
+    </select>
+    <delete id="bookDelete" parameterType="Int">
+        delete from books where bookId=#{id}
+    </delete>
+    <update id="bookUpdate">
+        update books set name="박재현", status=0 where bookId=7
+    </update>
+    <insert id="bookInsert">
+        insert into books (name, status) values ('이승훈', 1)
+    </insert>
 </mapper>

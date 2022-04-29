@@ -31,4 +31,9 @@ public class IndexController {
     public String renderQRMakerPage() {
         return "/qr_maker/index";
     }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String renderLoginPage() {
+        return "/login/login";
+    }
 }

@@ -4,63 +4,91 @@
         <meta charset="UTF-8">
         <title>로그인</title>
     </head>
+
+
     <body>
+    <head th:include="shared/libs.html"></head>
     <div id="app">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
-            <table class="index_table">
-                <tr>
-                    <td>
-                        대출
-                    </td>
-                    <td>
-                        반납
-                    </td>
-                    <td>
-                        설정
-                    </td>
-                </tr>
-            </table>
+        <div style="width: 300px; height: 600px; position:absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);">
+            <q-card>
+                <q-card-section>
+                    <img src="https://cdn.quasar.dev/img/mountains.jpg" style="width: 100%;">
+                </q-card-section>
+
+                <q-separator class="q-my-md"></q-separator>
+
+                <q-card-section>
+                    <q-input outlined v-model="form.userId" dense placeholder="아이디" class="q-mb-sm" @keyup.enter="handleLogin"
+                            :error="form_error.userId.length > 0" :error-message="form_error.userId">
+                    </q-input>
+                    <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
+                             :error="form_error.password.length > 0" :error-message="form_error.password">
+                    </q-input>
+                    <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
+                </q-card-section>
+            </q-card>
         </div>
-        {{ message }}
     </div>
     </body>
 </html>
 
-
-<style>
-    .index_table {
-        border-collapse: collapse;
-        width: 600px;
-        text-align: center;
-        border-top: 1px solid black;
-        border-right: 1px solid black;
-    }
-    .index_table tr td {
-        cursor: pointer;
-        border-left: 1px solid black;
-        border-bottom: 1px solid black;
-        width: 150px;
-        height: 150px;
-    }
-    .index_table tr td:hover {
-        background-color: #eee !important;
-    }
-</style>
-
 <script>
-    Vue.createApp({
+    const app = Vue.createApp({
         data: function() {
             return {
+                form: {
+                    userId: '',
+                    password: '',
+                },
+                form_error: {
+                    userId: '',
+                    password: '',
+                }
 
             }
         },
         methods: {
-            load: function() {
+            handleLogin: function() {
                 var vm = this;
+                axios.get('/api/user/login', {
+                    params: {
+                        userId: vm.form.userId,
+                        password: vm.form.password,
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    console.log("data:", data);
+                    vm.$q.loading.show();
+                    if(data.success) {
+
+                    } else {
+                        if(data.error) {
+                            for(var k in data.error) {
+                                vm.form_error[k] = data.error[k];
+                            }
+                        }
+                        if(data.message) {
+                            vm.$q.dialog({
+                                title: '에러',
+                                message: data.message
+                            }).onOk(() => {
+
+                            });
+                        }
+                    }
+                    vm.$q.loading.hide();
+                });
             },
         },
         mounted: function() {
-            console.log("load");
+            var vm = this;
+            console.log("login");
         },
-    }).mount('#app');
+    });
+    app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
+    app.mount('#app');
 </script>

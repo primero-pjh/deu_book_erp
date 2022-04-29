@@ -1,0 +1,170 @@
+package com.example.bap.controller;
+
+import com.example.bap.dao.AccountMapper;
+import com.example.bap.dao.BookMapper;
+import com.example.bap.dao.RecordMapper;
+import com.example.bap.dto.AccountDto;
+import com.example.bap.dto.BookDto;
+import com.example.bap.dto.RecordDto;
+import com.mysql.cj.util.StringUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
+@Controller
+public class AccountController {
+    @Autowired
+    private BookMapper bookMapper;
+    @Autowired
+    private RecordMapper recordMapper;
+    @Autowired
+    private AccountMapper accountMapper;
+
+    final String key = "!@#$%^&*09128340913890123890";
+
+    public class ReturnData {
+        public int success;
+        public int state;
+        public HashMap<String, String> error;
+        public String token;
+
+
+        public String message;
+        public List<AccountDto> user_list;
+        public AccountDto user;
+
+        public HashMap<String, String> getError() { return error;}
+        public void setError(HashMap<String, String> error) { this.error = error; }
+
+        public List<AccountDto> getUser_list() {
+            return user_list;
+        }
+        public void setUser_list(List<AccountDto> user_list) {
+            this.user_list = user_list;
+        }
+
+        public AccountDto getUser() {
+            return user;
+        }
+        public void setUser(AccountDto user) {
+            this.user = user;
+        }
+
+        public int getSuccess() {
+            return success;
+        }
+        public void setSuccess(int success) {
+            this.success = success;
+        }
+
+        public int getState() {
+            return state;
+        }
+        public void setState(int state) {
+            this.state = state;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getToken() { return token; }
+        public void setToken(String token) { this.token = token; }
+    }
+
+    @RequestMapping(value = "/api/user/login", method = RequestMethod.GET)
+    public @ResponseBody ReturnData Login(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        String userId = req.getParameter("userId");
+        String password = req.getParameter("password");
+        boolean isRemember = Boolean.parseBoolean(req.getParameter("isRemember"));
+        System.out.println(password);
+        var error = new HashMap<String, String>();
+        if(StringUtils.isNullOrEmpty(userId)) { error.put("userId", "필수입력 항목입니다."); }
+        if(StringUtils.isNullOrEmpty(password)) { error.put("password", "필수입력 항목입니다."); }
+        if(error.size() > 0) {
+            obj.setSuccess(0);
+            obj.setError(error);
+            return obj;
+        }
+
+        AccountDto user = new AccountDto();
+        user = accountMapper.get_user(userId, password);
+        if(user == null) {
+            obj.setSuccess(0);
+            obj.setMessage("아이디 혹은 비밀번호가 잘못되었습니다.");
+            return obj;
+        }
+
+        String token = createToken();
+
+        obj.setSuccess(1);
+        obj.setMessage("로그인 성공");
+        obj.setUser(user);
+        return obj;
+    }
+
+    public String createToken() {
+
+        //Header 부분 설정
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("alg", "HS256");
+
+        //payload 부분 설정
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("data", "My First JWT !!");
+
+        Long expiredTime = 1000 * 60L * 60L * 2L; // 토큰 유효 시간 (2시간)
+
+        Date ext = new Date(); // 토큰 만료 시간
+        ext.setTime(ext.getTime() + expiredTime);
+
+        // 토큰 Builder
+        String jwt = Jwts.builder()
+//                .setHeader(headers) // Headers 설정
+//                .setClaims(payloads) // Claims 설정
+//                .setSubject("user") // 토큰 용도
+//                .setExpiration(ext) // 토큰 만료 시간 설정
+//                .signWith(SignatureAlgorithm.HS256, key.getBytes()) // HS256과 Key로 Sign
+                .compact(); // 토큰 생성
+
+        return jwt;
+    }
+
+    //토큰 검증
+    public Map<String, Object> verifyJWT(String jwt) throws UnsupportedEncodingException {
+        Map<String, Object> claimMap = null;
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(key.getBytes("UTF-8")) // Set Key
+                    .parseClaimsJws(jwt) // 파싱 및 검증, 실패 시 에러
+                    .getBody();
+
+            claimMap = claims;
+
+            //Date expiration = claims.get("exp", Date.class);
+            //String data = claims.get("data", String.class);
+
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
+            System.out.println(e);
+        } catch (Exception e) { // 그외 에러났을 경우
+            System.out.println(e);
+        }
+        return claimMap;
+    }
+}

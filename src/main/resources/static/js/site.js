@@ -24,6 +24,9 @@ var $p = {
         }
         return temp;
     },
+    location_href: function(url) {
+        window.location.href = url;
+    },
     reload: function() {
         window.location.reload();
     },

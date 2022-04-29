@@ -92,7 +92,6 @@
                     var form_data = new FormData();
                     form_data.append("accountId", vm.$refs.top_menu.account.accountId);
                     axios.post('/api/rental/' + vm.form.bookId, form_data).then(function(res) {
-                        console.log(res.data);
                         if(res.data.success == 1) {
                             vm.$q.notify({
                                 type: 'positive',
@@ -180,7 +179,9 @@
                             outputMessage.hidden = true;
                             outputData.parentElement.hidden = false;
                             outputData.innerText = code.data;
+                            console.log("outputData:", code.data);
                             var json_data = JSON.parse(outputData.innerText);
+
                             if(json_data.hasOwnProperty('bookId') == false || json_data.bookId == 0) {
                                 vm.$q.notify({
                                     type: 'negative',

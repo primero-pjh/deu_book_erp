@@ -82,11 +82,15 @@
         },
         mounted: function() {
             var vm = this;
+            var token = $p.getToken("jwt");
+            if(token == null) {
+                $p.location_href('/login');
+                return;
+            }
+
             vm.isAdmin = vm.$refs.top_menu.account.isAdmin;
         },
-    })
-
-
+    });
 </script>
 <head th:include="shared/top_menu.html"></head>
 <script>
