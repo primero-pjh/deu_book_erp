@@ -25,13 +25,33 @@ public class IndexController {
         return "/return/index";
     }
 
-    @RequestMapping(value = "/qr_maker", method = RequestMethod.GET)
+    @RequestMapping(value = "/qrMaker", method = RequestMethod.GET)
     public String renderQRMakerPage() {
-        return "/qr_maker/index";
+        return "/qrMaker/index";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String renderLoginPage() {
         return "/login/login";
+    }
+
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public String renderSignUpPage() {
+        return "/signup/signup";
+    }
+
+    @RequestMapping(value = "/myPage", method = RequestMethod.GET)
+    public String rendermyPage() {
+        return "/myPage/index";
+    }
+
+    @RequestMapping(value = "/bookManage", method = RequestMethod.GET)
+    public String renderbookManagePage() {
+        return "/bookManage/index";
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public String rendersearchPage() {
+        return "/search/index";
     }
 }

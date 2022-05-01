@@ -1,20 +1,31 @@
 <script type="text/x-template" id="top_menu">
     <div>
         <q-bar style="height: 45px;" class="bg-primary text-white">
-            <q-btn dense flat icon="home" @click="location_href('')"></q-btn>
-            <div class="text-weight-bold">
-                deuERP
+            <div style="width: 200px; display: inline-flex;">
+                <q-btn dense flat icon="home" @click="location_href('/')"></q-btn>
+                <div class="text-weight-bold">
+                    deuERP
+                </div>
+            </div>
+            <div style="width: 100%; text-align: center;">
+                <q-tabs v-model="tab" dense inline-label class="text-white">
+                    <template v-for="row in menu_list">
+                        <q-tab :name="row.url" :label="row.label" flat size="sm" @click="click_tab(row)"></q-tab>
+                    </template>
+                </q-tabs>
             </div>
             <q-space></q-space>
-            <q-btn :label="account.userId" icon="person" class="text-white">
-                <q-menu>
-                    <q-list style="min-width: 100px">
-                        <q-item clickable v-close-popup dense>
-                            <q-item-section @click="handleLogout">로그아웃</q-item-section>
-                        </q-item>
-                    </q-list>
-                </q-menu>
-            </q-btn>
+            <div style="width: 200px;">
+                <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>
+                    <q-menu>
+                        <q-list style="min-width: 100px">
+                            <q-item clickable v-close-popup dense>
+                                <q-item-section @click="handleLogout">로그아웃</q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-menu>
+                </q-btn>
+            </div>
         </q-bar>
     </div>
 </script>
@@ -25,28 +36,68 @@
         template: "#top_menu",
         data() {
             return {
+                tab: '',
+
                 account: {
-                    accountId: 1,
-                    userId: '123',
+                    accountId: 0,
+                    userId: '',
                     phoneNumber: '',
                     lastLoginDate: '',
-                    status: 1,
-                    isAdmin: 1,
+                    status: 0,
+                    isAdmin: 0,
                 },
+
+                menu_list: [
+                    { label: '대여', icon: '', url: '/rental' },
+                    { label: '반납', icon: '', url: '/return' },
+                    { label: '마이페이지', icon: '', url: '/myPage' },
+                    { label: '도서검색', icon: '', url: '/search' },
+                    { label: '관리자메뉴', icon: '', url: '/setting' },
+                    { label: '도서관리', icon: '', url: '/bookManage' },
+                ],
             }
         },
         methods: {
+            click_tab: function(row) {
+                var vm = this;
+                vm.tab = row.url;
+                $p.location_href(row.url);
+            },
             location_href: function(url) {
-                window.location.href = "/" + url;
+                $p.location_href(url);
             },
             handleLogout: function() {
                 var vm = this;
                 $p.deleteToken("jwt");
                 $p.location_href('/login');
             },
+
+            getUser: function() {
+                var vm = this;
+                vm.$q.loading.show();
+                axios.get('/api/user/own/info', {
+                    params: {
+
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 0) {
+                        $p.location_href('/login');
+                    }
+                    if(data.success) {
+                        vm.account = data.user;
+                        if(vm.$root._.data.hasOwnProperty('account')) {
+                            vm.$root._.data.account = vm.account;
+                        }
+                        vm.$q.loading.hide();
+                    }
+                });
+            }
         },
         mounted: function() {
             var vm = this;
+            vm.tab = window.location.pathname;
+            vm.getUser();
         }
     });
 </script>

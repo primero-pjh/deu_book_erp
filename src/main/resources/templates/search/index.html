@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>도서관리</title>
+</head>
+
+<body>
+<head th:include="shared/libs.html"></head>
+<script src="static/js/qrcodejs/qrcode.min.js"></script>
+<div id="app">
+    <top_menu ref="top_menu"></top_menu>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 100%;">
+                <q-card class="q-pa-md">
+                    <q-card-section>
+                        <div style="display: flex; width: 100%;">
+                            <q-input outlined dense placeholder="Search" class="q-mr-sm" style="width: 100%;"></q-input>
+                            <q-space></q-space>
+                            <q-btn dense flat icon="search"></q-btn>
+                        </div>
+                    </q-card-section>
+                    <q-separator></q-separator>
+                    <q-card-section>
+                        <q-table ref="book_list"
+                                 class="my-sticky-header-table"
+                                 style="height: 600px" :filter="filter"
+                                 :rows="book_list" :columns="book_columns" virtual-scroll
+                                 :rows-per-page-options="[0]" separator="vertical"
+                                 no-data-label="데이터가 없습니다.">
+                            <template v-slot:body="props">
+                                <q-tr :props="props">
+                                    <q-td>{{props.row.bookId}}</q-td>
+                                    <q-td>{{props.row.name}}</q-td>
+                                    <q-td>{{props.row.category}}</q-td>
+                                    <q-td>{{props.row.writer}}</q-td>
+                                    <q-td>{{props.row.publisher}}</q-td>
+                                    <q-td>{{props.row.location}}</q-td>
+                                    <q-td>
+                                        <template v-if="props.row.status">
+                                            <q-badge color="positive">
+                                                가능
+                                            </q-badge>
+                                        </template>
+                                        <template v-else>
+                                            <q-badge color="negative">
+                                                불가능
+                                            </q-badge>
+                                        </template>
+                                    </q-td>
+
+                                </q-tr>
+                            </template>
+                        </q-table>
+                    </q-card-section>
+                </q-card>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
+
+<style>
+</style>
+
+<script>
+     const app = Vue.createApp({
+        data: function() {
+            return {
+                book_list: [],
+                book_columns: [
+                    { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
+                    { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
+                    { name: 'category', label: '카테고리', field: 'category', align: 'left', sortable: true },
+                    { name: 'writer', label: '저자', field: 'writer', align: 'left', sortable: true },
+                    { name: 'publisher', label: '출판사', field: 'publisher', align: 'left', sortable: true },
+                    { name: 'location', label: '위치', field: 'location', align: 'left', sortable: true },
+                    { name: 'status', label: '대여유무', field: 'status', align: 'left', sortable: true },
+                ],
+            }
+        },
+        methods: {
+            load_book_list: function() {
+                var vm = this;
+                vm.$q.loading.show();
+                axios.get('/api/book', {
+                    params: {
+
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 1) {
+                        var row = data.bookList;
+                        vm.book_list = row;
+                    } else {
+                        vm.$q.notify({
+                            type: 'negative',
+                            message: data.message,
+                            position: 'bottom',
+                            timeout: 1000,
+                        });
+                    }
+                    vm.$q.loading.hide();
+                });
+            },
+        },
+        mounted: function() {
+            var vm = this;
+            vm.load_book_list();
+        },
+    });
+
+</script>
+<head th:include="shared/top_menu.html"></head>
+<script>
+    app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
+    app.mount('#app');
+</script>

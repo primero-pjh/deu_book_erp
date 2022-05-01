@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>홈화면</title>
+</head>
+
+<body>
+<head th:include="shared/libs.html"></head>
+
+<div id="app">
+    <top_menu ref="top_menu"></top_menu>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 200px; vertical-align: top;">
+                <q-list bordered>
+                    <template v-for="row in menu_list">
+                        <q-item  clickable v-ripple @click="select_type(row)" :active="row.is_selected">
+                            <q-item-section>{{row.title}}</q-item-section>
+                        </q-item>
+                        <q-separator></q-separator>
+                    </template>
+
+                </q-list>
+            </td>
+            <td style="vertical-align: top;">
+                <q-card class="q-pa-md" v-if="type == 'recordList'">
+                    <q-card-section>
+                        <q-table title="대여내역" :rows="record_list" :columns="record_columns" row-key="name">
+
+                        </q-table>
+                    </q-card-section>
+                </q-card>
+                <q-card class="q-pa-md" v-else-if="type == 'accountSet'">
+                    <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated>
+                        <q-step :name="1" title="비밀번호 입력" icon="settings" :done="step > 1">
+                            비밀번호를 입력하세요.
+                        </q-step>
+
+                        <q-step :name="2" title="Create an ad group" caption="Optional" icon="create_new_folder" :done="step > 2">
+                            바꿀 비밀번호와, 번호를 입력하세요.
+                        </q-step>
+
+                        <q-step :name="3" title="Create an ad" icon="add_comment">
+                            완료!
+                        </q-step>
+
+                        <template v-slot:navigation>
+                            <q-stepper-navigation>
+                                <q-btn @click="$refs.stepper.next()" color="primary" :label="step === 3 ? '로그인 페이지로 이동' : '진행'"></q-btn>
+                                <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="뒤로가기" class="q-ml-sm"></q-btn>
+                            </q-stepper-navigation>
+                        </template>
+                    </q-stepper>
+                </q-card>
+
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
+
+<script>
+     const app = Vue.createApp({
+        data: function() {
+            return {
+                step: 1,
+
+                user: {},
+                type: 'recordList',
+
+                menu_list: [
+                    { type: 'recordList', title: '대여내역', is_selected: true },
+                    { type: 'accountSet', title: '개인정보변경', is_selected: false },
+                ],
+
+                record_list: [],
+                record_columns: [
+                    { name: 'recordId', label: '번호', align: 'left', sortable: true },
+                ]
+            }
+        },
+        methods: {
+            select_type: function(row) {
+                var vm = this;
+                for(var i=0; i<vm.menu_list.length; i++) {
+                    vm.menu_list[i].is_selected = false;
+                }
+                row.is_selected = true;
+                vm.type = row.type;
+            },
+
+            load_record_list: function() {
+                var vm = this;
+                axios.get('/api/record', {
+                    params: {}
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 0 && data.is_logged == false) {
+                        $p.location_href('/');
+                    }
+
+                    if(data.success) {
+                        var row = data.record_list;
+                        vm.record_list = row;
+                    }
+                });
+            },
+        },
+        mounted: function() {
+            var vm = this;
+//            vm.load_record_list();
+        },
+    });
+</script>
+<head th:include="shared/top_menu.html"></head>
+<script>
+    app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
+    app.mount('#app');
+</script>

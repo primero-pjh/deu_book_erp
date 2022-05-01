@@ -9,9 +9,7 @@ import com.example.bap.dto.AccountDto;
 public interface AccountMapper {
     public List<AccountDto> account_list();
     public AccountDto get_user(String id, String pw);
-
-    public void bookDelete(int bookId);
-    public void bookUpdate();
-    public void bookInsert();
-
+    public AccountDto get_user_userId(String userId);
+    public AccountDto check_user(String userId);
+    public void sign_up(String userId, String password, String phoneNumber);
 }

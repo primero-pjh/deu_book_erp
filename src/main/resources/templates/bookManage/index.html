@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>도서관리</title>
+</head>
+
+<body>
+<head th:include="shared/libs.html"></head>
+<script src="static/js/qrcodejs/qrcode.min.js"></script>
+<div id="app">
+    <top_menu ref="top_menu"></top_menu>
+    <table style="width: 100%; min-width: 1200px; overflow: scroll;">
+        <tr>
+            <td style="width: 250px;">
+                <q-card>
+                    <q-card-section>
+                        <q-btn icon="add" label="추가" @click="handleInsert"></q-btn>
+                    </q-card-section>
+                    <q-separator></q-separator>
+                    <q-card-section>
+                        <q-table ref="book_list"
+                                 class="my-sticky-header-table"
+                                 style="height: 600px" :filter="filter"
+                                 :rows="book_list" :columns="book_columns" virtual-scroll
+                                 :rows-per-page-options="[0]" separator="vertical"
+                                 no-data-label="데이터가 없습니다.">
+                            <template v-slot:top-right>
+                                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                                    <template v-slot:append>
+                                        <q-icon name="search" />
+                                    </template>
+                                </q-input>
+                            </template>
+                            <template v-slot:body="props">
+                                <q-tr :props="props">
+                                    <q-td>{{props.row.index}}</q-td>
+                                    <q-td>{{props.row.name}}</q-td>
+                                    <q-td>{{props.row.category}}</q-td>
+                                    <q-td>{{props.row.writer}}</q-td>
+                                    <q-td>{{props.row.publisher}}</q-td>
+                                    <q-td>
+                                        <q-btn color="positive" icon="edit" class="q-mr-sm" dense size="sm" @click="handleEdit"></q-btn>
+                                        <q-btn color="negative" icon="delete" dense size="sm" @click="handleDelete"></q-btn>
+                                    </q-td>
+                                    <q-td>
+                                        <q-btn @click="make_gr(props.row)">QR코드생성</q-btn>
+                                    </q-td>
+                                </q-tr>
+                            </template>
+                        </q-table>
+                    </q-card-section>
+                </q-card>
+            </td>
+            <td style="position: relative;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
+                    <div style="border:3px solid; padding:5px;">
+                        <div id="qrcode"></div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
+
+<style>
+</style>
+
+<script>
+     const app = Vue.createApp({
+        data: function() {
+            return {
+                start_date: "",
+                end_date: "",
+                filter: "",
+
+                book_list: [],
+                book_columns: [
+                    { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
+                    { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
+                    { name: 'category', label: '카테고리', field: 'category', align: 'left', sortable: true },
+                    { name: 'writer', label: '저자', field: 'writer', align: 'left', sortable: true },
+                    { name: 'publisher', label: '출판사', field: 'publisher', align: 'left', sortable: true },
+                    { name: '', label: ' ', align: 'left', headerStyle: 'width: 60px; text-align: center;'},
+                    { name: '', label: ' ', align: 'left', headerStyle: 'width: 60px; text-align: center;'},
+                ],
+            }
+        },
+        methods: {
+            make_gr: function (row) {
+                var vm = this;
+                let json_data = {
+                    bookId: row.bookId,
+                };
+                document.getElementById("qrcode").innerHTML = "";
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                     text: JSON.stringify(json_data),
+                     width: 300,  //가로
+                     height: 300, //세로
+                     colorDark: "#000000", //qr에서 어두운 색 (보통 검은색)
+                     colorLight : "#ffffff", //qr에서 밝은 색 (보통 하얀색) colorDark 보다 옅어야한다.
+                     correctLevel : QRCode.CorrectLevel.H //qr코드 오류복원능력임 (L->M->Q->H)
+                });
+            },
+
+            handleInsert: function() {
+
+            },
+            handleUpdate: function() {
+
+            },
+            handleDelete: function() {
+
+            },
+
+
+            load_book_list: function() {
+                var vm = this;
+                vm.$q.loading.show();
+                axios.get('/api/book', {
+                    params: {
+
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 1) {
+                        var row = data.bookList;
+                        vm.book_list = row;
+                    } else {
+                        vm.$q.notify({
+                            type: 'negative',
+                            message: data.message,
+                            position: 'bottom',
+                            timeout: 1000,
+                        });
+                    }
+                    vm.$q.loading.hide();
+                });
+            },
+        },
+        mounted: function() {
+            var vm = this;
+            vm.load_book_list();
+        },
+    });
+
+</script>
+<head th:include="shared/top_menu.html"></head>
+<script>
+    app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
+    app.mount('#app');
+</script>

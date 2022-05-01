@@ -14,35 +14,29 @@
         <q-card class="q-pa-md">
             <table class="index_table">
                 <tr>
-                    <td @click="location_href('rental')">
+                    <td @click="location_href('/rental')">
                         <span>대여</span>
                     </td>
-                    <td @click="location_href('return')">
+                    <td @click="location_href('/return')">
                         <span>반납</span>
                     </td>
-                    <td @click="">
-                        <span>개인정보변경</span>
+                    <td @click="location_href('/myPage')">
+                        <span>마이페이지</span>
                     </td>
                 </tr>
                 <tr>
-                    <td @click="location_href('record')">
-                        사용내역
+                    <td @click="location_href('/search')">
+                        <span>도서 검색</span>
                     </td>
-                    <td v-if="isAdmin" @click="location_href('setting')">
+                    <td v-if="account.isAdmin" @click="location_href('/setting')">
                         <span>관리자메뉴</span>
                     </td>
                     <td v-else></td>
 
-                    <td v-if="isAdmin">
-                        책 관리
+                    <td v-if="account.isAdmin" @click="location_href('/bookManage')">
+                        도서 관리
                     </td>
                     <td v-else></td>
-                </tr>
-                <tr>
-                    <td v-if="isAdmin" @click="location_href('qr_maker')">QR생성</td>
-                    <td v-else></td>
-                    <td></td>
-                    <td></td>
                 </tr>
             </table>
         </q-card>
@@ -74,27 +68,25 @@
      const app = Vue.createApp({
         data: function() {
             return {
-                isAdmin: false,
+                account: '',
             }
         },
         methods: {
             location_href: function(url) {
-                window.location.href = '/' + url;
+                $p.location_href(url);
             }
         },
         mounted: function() {
             var vm = this;
-            var token = $p.getToken("jwt");
-            if(!token) {
-                $p.location_href('/login');
-                return;
-            }
-            vm.isAdmin = vm.$refs.top_menu.account.isAdmin;
         },
     });
 </script>
 <head th:include="shared/top_menu.html"></head>
 <script>
-    app.use(Quasar);
+     app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
     app.mount('#app');
 </script>

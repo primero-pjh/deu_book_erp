@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>로그인</title>
+        <title>회원가입</title>
     </head>
 
     <body>
@@ -17,17 +17,17 @@
                 <q-separator class="q-my-md"></q-separator>
 
                 <q-card-section>
-                    <q-input outlined v-model="form.userId" dense placeholder="아이디" class="q-mb-sm" @keyup.enter="handleLogin"
+                    <q-input outlined v-model="form.userId" dense placeholder="아이디" class="q-mb-sm" @keyup.enter="handleSignUp"
                             :error="form_error.userId.length > 0" :error-message="form_error.userId">
                     </q-input>
-                    <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
-                             :error="form_error.password.length > 0" :error-message="form_error.password" type="password">
+                    <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleSignUp"
+                             :error="form_error.password.length > 0" :error-message="form_error.password">
+                    </q-input>
+                    <q-input outlined v-model="form.phoneNumber" dense placeholder="휴대폰번호" class="q-mb-sm" @keyup.enter="handleSignUp"
+                             :error="form_error.phoneNumber.length > 0" :error-message="form_error.phoneNumber">
                     </q-input>
 <!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
-                    <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
-                </q-card-section>
-                <q-card-section>
-                    <a href="/signup">회원가입</a>
+                    <q-btn label="회원가입" color="primary" style="width: 100%;" @click="handleSignUp"></q-btn>
                 </q-card-section>
             </q-card>
         </div>
@@ -42,32 +42,42 @@
                 form: {
                     userId: '',
                     password: '',
+                    phoneNumber: '',
                 },
                 isRemember: true,
 
                 form_error: {
                     userId: '',
                     password: '',
+                    phoneNumber: '',
                 },
             }
         },
         methods: {
-            handleLogin: function() {
+            handleSignUp: function() {
                 var vm = this;
-                vm.$q.loading.show();
-                axios.get('/api/user/login', {
+                $p.clearError(vm.form_error);
+                axios.get('/api/user/signup', {
                     params: {
                         userId: vm.form.userId,
                         password: vm.form.password,
-                        isRemember: vm.isRemember,
+                        phoneNumber: vm.form.phoneNumber,
                     }
                 }).then(function(res) {
                     var data = res.data;
+                    vm.$q.loading.show();
                     if(data.success) {
-                        if(data.token) {
-                            $p.setToken("jwt", data.token, 1);
-                        }
-                        $p.location_href('/');
+                        console.log(data);
+                        vm.$q.dialog({
+                            title: '확인',
+                            message: data.message
+                        }).onOk(() => {
+                            setTimeout(() => {
+                                $p.location_href('/login');
+                            },1000);
+                        }).onCancel(() => {
+                            $p.location_href('/login');
+                        });
                     } else {
                         if(data.error) {
                             for(var k in data.error) {
@@ -89,28 +99,6 @@
         },
         mounted: function() {
             var vm = this;
-            var token = $p.getToken("jwt");
-            if(token) {
-                 axios.get('/api/user/verityJWT', {
-                    params: {
-                        token: token,
-                    }
-                }).then(function(res) {
-                    var data = res.data;
-                    vm.$q.loading.show();
-                    if(data.success) {
-                        $p.location_href('/');
-                    } else {
-                        vm.$q.dialog({
-                            title: "에러",
-                            message: "로그인 토큰이 만료되었습니다. 다시 로그인해주세요"
-                        }).onOk(() => {
-
-                        });
-                    }
-                    vm.$q.loading.hide();
-                });
-            }
         },
     });
     app.use(Quasar, {

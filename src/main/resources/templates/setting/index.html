@@ -10,37 +10,40 @@
 
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <div style="width: 100%; display: flex;">
-        <div style="width: 250px;">
-            <q-list bordered separator>
-                <template v-for="row in menu_list">
-                    <q-item clickable v-ripple @click="click_menu(row)"
-                            style="height: 56px; background-color: white; color: black;"
-                            :active="row.active" active-class="active">
-                        <q-item-section>
-                            <p style="font-weight: bold;">{{row.title}}</p>
-                        </q-item-section>
-                    </q-item>
-                </template>
-            </q-list>
-        </div>
-        <div style="padding-left: 6px;">
-            <span>{{form.keyword}}</span>
-            <q-input outlined dense v-model="form.value"></q-input>
-            <br/>
-            <q-btn @click="handleSave">저장</q-btn>
-        </div>
-    </div>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 200px; vertical-align: top;" >
+                <div>
+                    <q-list bordered separator>
+                        <template v-for="row in menu_list">
+                            <q-item clickable v-ripple @click="click_menu(row)"
+                                    :active="row.is_selected">
+                                <q-item-section>
+                                    <p style="font-weight: bold;">{{row.keyword2}}</p>
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-list>
+                </div>
+            </td>
+            <td style="vertical-align: top;">
+                <q-card>
+                    <q-card-section>
+                        <div>
+                            <span>{{form.keyword2}}</span>
+                            <q-input outlined dense v-model="form.value"></q-input>
+                            <br/>
+                            <q-btn @click="handleSave">저장</q-btn>
+                        </div>
+                    </q-card-section>
+                </q-card>
+            </td>
+        </tr>
+    </table>
 </div>
 </body>
 </html>
 
-<style>
-    .active {
-        background-color: black !important;
-        color: white !important;
-    }
-</style>
 
 <script>
      const app = Vue.createApp({
@@ -49,6 +52,7 @@
                 form: {
                     settingId: '',
                     keyword: '',
+                    keyword2: '',
                     value: '',
                 },
                 select_menu: 'MaxRenderDateValue',
@@ -65,11 +69,9 @@
                 var vm = this;
                 vm.select_menu = row.title;
                 for(var i=0; i<vm.menu_list.length; i++) {
-                    vm.menu_list[i].active = false;
-                    if(vm.menu_list[i].value == row.value) {
-                        vm.menu_list[i].active = true;
-                    }
+                    vm.menu_list[i].is_selected = false;
                 }
+                row.is_selected = true;
                 vm.load_setting(row.settingId);
             },
             load_setting_list: function() {
@@ -82,12 +84,13 @@
                     for(var i=0; i<row.length; i++) {
                         vm.menu_list.push({
                             settingId: row[i].settingId,
-                            title: row[i].keyword,
+                            keyword: row[i].keyword,
+                            keyword2: row[i].keyword2,
                             value: row[i].value,
-                            active: false,
+                            is_selected: false,
                         });
                     }
-                    vm.menu_list[0].active = true;
+                    vm.menu_list[0].is_selected = true;
                     vm.load_setting(vm.menu_list[0].settingId);
                 });
             },
@@ -103,6 +106,7 @@
             },
             handleSave: function() {
                 var vm = this;
+                vm.$q.loading.show();
                 var form_data = new FormData();
                 form_data.append("keyword", vm.form.keyword);
                 form_data.append("value", vm.form.value);
@@ -123,14 +127,12 @@
                             timeout: 1000,
                         });
                     }
+                    vm.$q.loading.hide();
                 });
             },
         },
         mounted: function() {
             var vm = this;
-            if(!vm.$refs.top_menu.account.isAdmin) {
-                vm.location_href('login');
-            }
             vm.load_setting_list();
         },
     })
@@ -139,8 +141,10 @@
 </script>
 <head th:include="shared/top_menu.html"></head>
 <script>
-    app.use(Quasar);
+    app.use(Quasar, {
+        config: {
+            loading: {}
+        }
+    });
     app.mount('#app');
-
-
 </script>

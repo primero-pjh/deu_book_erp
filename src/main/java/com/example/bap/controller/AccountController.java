@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -36,13 +37,20 @@ public class AccountController {
     public class ReturnData {
         public int success;
         public int state;
+        public boolean isLogged;
         public HashMap<String, String> error;
         public String token;
+        public Map<String, Object> user_map;
 
+        public Map<String, Object> getUser_map() { return user_map; }
+        public void setUser_map(Map<String, Object> user_map) { this.user_map = user_map; }
 
         public String message;
         public List<AccountDto> user_list;
         public AccountDto user;
+
+        public boolean isLogged() { return isLogged; }
+        public void setLogged(boolean logged) { isLogged = logged; }
 
         public HashMap<String, String> getError() { return error;}
         public void setError(HashMap<String, String> error) { this.error = error; }
@@ -110,7 +118,7 @@ public class AccountController {
         }
 
         if(isRemember == true) {
-            String token = createToken();
+            String token = createToken(userId);
             obj.setToken(token);
         }
 
@@ -140,7 +148,93 @@ public class AccountController {
         return obj;
     }
 
-    public String createToken() {
+    /*
+       사용처: /template/shared/top_menu.html --> getUser();
+       유저정보를 들고온다.
+    */
+    @RequestMapping(value = "/api/user/own/info", method = RequestMethod.GET)
+    public @ResponseBody ReturnData getUser(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        var list = req.getCookies();
+        String token = "";
+        for(Cookie cookie:list) {
+            if(cookie.getName().equals("jwt")) {
+                token = cookie.getValue();
+            }
+        }
+
+        Map<String, Object> user = null;
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(key.getBytes("UTF-8")) // Set Key
+                    .parseClaimsJws(token) // 파싱 및 검증, 실패 시 에러
+                    .getBody();
+            user = claims;
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
+            System.out.println(e);
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        } catch (Exception e) { // 그외 에러났을 경우
+            System.out.println(e);
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        }
+
+        var userId = user.get("userId").toString();
+        var userDTO = accountMapper.get_user_userId(userId);
+
+        obj.setSuccess(1);
+        obj.setLogged(true);
+        obj.setUser(userDTO);
+        return obj;
+    }
+
+    /*
+        사용처: /template/signup/index --> handleSignUp();
+        회원가입을 한다.
+     */
+    @RequestMapping(value = "/api/user/signup", method = RequestMethod.GET)
+    public @ResponseBody ReturnData SignUp(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        HashMap<String, String> error = new HashMap<String, String>();
+        String userId = req.getParameter("userId");
+        String password = req.getParameter("password");
+        String phoneNumber = req.getParameter("phoneNumber");
+
+        if(StringUtils.isNullOrEmpty(userId) == true) {
+            error.put("userId", "필수입력 항목입니다.");
+        }
+        if(StringUtils.isNullOrEmpty(password) == true) {
+            error.put("password", "필수입력 항목입니다.");
+        }
+        if(StringUtils.isNullOrEmpty(phoneNumber) == true) {
+            error.put("phoneNumber", "필수입력 항목입니다.");
+        }
+
+        if(error.size() > 0) {
+            obj.setSuccess(0);
+            obj.setError(error);
+            return obj;
+        }
+
+        var user = accountMapper.check_user(userId);
+        if(user != null) {
+            obj.setSuccess(0);
+            error.put("userId", "이미 존재하는 Id입니다.");
+            obj.setError(error);
+            return obj;
+        }
+
+        accountMapper.sign_up(userId, password, phoneNumber);
+
+        obj.setSuccess(1);
+        obj.setMessage("회원가입에 성공하셨습니다.");
+        return obj;
+    }
+
+    public String createToken(String userId) {
         //Header 부분 설정
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
@@ -148,7 +242,7 @@ public class AccountController {
 
         //payload 부분 설정
         Map<String, Object> payloads = new HashMap<>();
-        payloads.put("data", "My First JWT !!");
+        payloads.put("userId", userId);
 
         Long expiredTime = 1000 * 60L * 60L * 2L; // 토큰 유효 시간 (2시간)
 
