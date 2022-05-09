@@ -13,20 +13,48 @@
     <table style="width: 100%;">
         <tr>
             <td>
-                <div class="q-pa-md">
-                    <div class="q-gutter-sm">
-                        <q-radio v-model="search_type" val="name" label="도서명"></q-radio>
-                        <q-radio v-model="search_type" val="writer" label="저자"></q-radio>
-                        <q-radio v-model="search_type" val="category" label="도서분류"></q-radio>
-                        <q-radio v-model="search_type" val="publisher" label="출판사"></q-radio>
+                <div style="width: 100%; display: flex;">
+                    <div style="display: flex;" class="q-pa-md">
+                        <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
+                            <template v-slot:append>
+                                <q-icon name="event" class="cursor-pointer">
+                                    <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                        <q-date v-model="start_date">
+                                            <div class="row items-center justify-end">
+                                                <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                            </div>
+                                        </q-date>
+                                    </q-popup-proxy>
+                                </q-icon>
+                            </template>
+                        </q-input>
+                        ~
+                        <q-input filled dense v-model="end_date" mask="date" :rules="['date']" style="width: 200px;">
+                            <template v-slot:append>
+                                <q-icon name="event" class="cursor-pointer">
+                                    <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                        <q-date v-model="end_date">
+                                            <div class="row items-center justify-end">
+                                                <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                            </div>
+                                        </q-date>
+                                    </q-popup-proxy>
+                                </q-icon>
+                            </template>
+                        </q-input>
+                    </div>
+                    <div class="q-pa-md">
+                        <div class="q-gutter-sm">
+                            <q-radio v-model="search_type" val="bookName" label="도서명"></q-radio>
+                            <q-radio v-model="search_type" val="userId" label="사용자ID"></q-radio>
+                        </div>
                     </div>
                 </div>
             </td>
-
         </tr>
         <tr>
             <td style="width: 100%;">
-                <q-card class="q-pa-md">
+                <q-card class="q-px-md">
                     <q-card-section>
                         <div style="display: flex; width: 100%;">
                             <q-input outlined dense placeholder="Search" class="q-mr-sm" style="width: 100%;"></q-input>
@@ -44,7 +72,6 @@
                                  no-data-label="데이터가 없습니다.">
                             <template v-slot:body="props">
                                 <q-tr :props="props">
-                                    <q-td>{{props.row.bookId}}</q-td>
                                     <q-td>{{props.row.name}}</q-td>
                                     <q-td>{{props.row.category}}</q-td>
                                     <q-td>{{props.row.writer}}</q-td>
@@ -53,12 +80,12 @@
                                     <q-td>
                                         <template v-if="props.row.status">
                                             <q-badge color="positive">
-                                                가능
+                                                O
                                             </q-badge>
                                         </template>
                                         <template v-else>
                                             <q-badge color="negative">
-                                                불가능
+                                                X
                                             </q-badge>
                                         </template>
                                     </q-td>
@@ -82,17 +109,18 @@
      const app = Vue.createApp({
         data: function() {
             return {
+                start_date: '',
+                end_date: '',
                 search_type: 'name',
 
                 book_list: [],
                 book_columns: [
-                    { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
+                    { name: 'index', label: '사용자명', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
                     { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
-                    { name: 'category', label: '카테고리', field: 'category', align: 'left', sortable: true },
-                    { name: 'writer', label: '저자', field: 'writer', align: 'left', sortable: true },
-                    { name: 'publisher', label: '출판사', field: 'publisher', align: 'left', sortable: true },
-                    { name: 'location', label: '위치', field: 'location', align: 'left', sortable: true },
-                    { name: 'status', label: '대여유무', field: 'status', align: 'left', sortable: true },
+                    { name: 'category', label: '대여일', field: 'category', align: 'left', sortable: true },
+                    { name: 'writer', label: '반납일', field: 'writer', align: 'left', sortable: true },
+                    { name: 'publisher', label: '반납예정일', field: 'publisher', align: 'left', sortable: true },
+                    { name: 'status', label: '연체유무', field: 'status', align: 'left', sortable: true },
                 ],
             }
         },
@@ -107,8 +135,8 @@
                 }).then(function(res) {
                     var data = res.data;
                     if(data.success == 1) {
-                        var row = data.bookList;
-                        vm.book_list = row;
+                        var row = data.bookList[0];
+                        vm.book_list.push(row);
                     } else {
                         vm.$q.notify({
                             type: 'negative',
@@ -123,6 +151,9 @@
         },
         mounted: function() {
             var vm = this;
+            var today = new Date();
+            vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
+            vm.end_date = $p.formatDate(today);
             vm.load_book_list();
         },
     });

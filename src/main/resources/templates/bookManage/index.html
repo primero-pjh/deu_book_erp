@@ -34,7 +34,7 @@
                             </template>
                             <template v-slot:body="props">
                                 <q-tr :props="props">
-                                    <q-td>{{props.row.index}}</q-td>
+                                    <q-td>{{props.row.bookId}}</q-td>
                                     <q-td>{{props.row.name}}</q-td>
                                     <q-td>{{props.row.category}}</q-td>
                                     <q-td>{{props.row.writer}}</q-td>
@@ -78,7 +78,7 @@
 
                 book_list: [],
                 book_columns: [
-                    { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
+                    { name: 'bookId', label: '번호', field: 'bookId', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
                     { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
                     { name: 'category', label: '카테고리', field: 'category', align: 'left', sortable: true },
                     { name: 'writer', label: '저자', field: 'writer', align: 'left', sortable: true },

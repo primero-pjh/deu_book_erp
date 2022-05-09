@@ -98,6 +98,7 @@
                 }).then(function(res) {
                     var data = res.data;
                     vm.$q.loading.show();
+                    console.log("data:", data);
                     if(data.success) {
                         $p.location_href('/');
                     } else {

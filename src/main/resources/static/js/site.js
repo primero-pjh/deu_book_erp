@@ -48,9 +48,19 @@ var $p = {
     reload: function() {
         window.location.reload();
     },
-    formatDate: function(i_date) {
-        var date = new Date(i_date).format("yyyy-MM-dd");
-        var time = new Date(i_date).format("HH:mm:ss");
-        return {date: date, time: time}
+    formatDate: function(date) {
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let hour = date.getHours();
+        let minute = date.getMinutes();
+        let second = date.getSeconds();
+
+        month = month >= 10 ? month : '0' + month;
+        day = day >= 10 ? day : '0' + day;
+        hour = hour >= 10 ? hour : '0' + hour;
+        minute = minute >= 10 ? minute : '0' + minute;
+        second = second >= 10 ? second : '0' + second;
+
+        return date.getFullYear() + '-' + month + '-' + day + ' ';
     }
 }

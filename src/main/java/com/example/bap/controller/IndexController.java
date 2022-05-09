@@ -50,6 +50,11 @@ public class IndexController {
         return "/bookManage/index";
     }
 
+    @RequestMapping(value = "/overDueManage", method = RequestMethod.GET)
+    public String renderoverDueManagePage() {
+        return "/overDueManage/index";
+    }
+
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String rendersearchPage() {
         return "/search/index";

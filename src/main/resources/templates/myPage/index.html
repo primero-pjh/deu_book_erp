@@ -12,7 +12,7 @@
     <top_menu ref="top_menu"></top_menu>
     <table style="width: 100%;">
         <tr>
-            <td style="width: 200px; vertical-align: top;">
+            <td rowspan="2" style="width: 200px; vertical-align: top;">
                 <q-list bordered>
                     <template v-for="row in menu_list">
                         <q-item  clickable v-ripple @click="select_type(row)" :active="row.is_selected">
@@ -23,10 +23,43 @@
 
                 </q-list>
             </td>
+            <td>
+                <div style="width: 100%; display: flex;">
+                    <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
+                        <template v-slot:append>
+                            <q-icon name="event" class="cursor-pointer">
+                                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                    <q-date v-model="start_date">
+                                        <div class="row items-center justify-end">
+                                            <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                        </div>
+                                    </q-date>
+                                </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                    ~
+                    <q-input filled dense v-model="end_date" mask="date" :rules="['date']" style="width: 200px;">
+                        <template v-slot:append>
+                            <q-icon name="event" class="cursor-pointer">
+                                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                    <q-date v-model="end_date">
+                                        <div class="row items-center justify-end">
+                                            <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                        </div>
+                                    </q-date>
+                                </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                </div>
+            </td>
+        </tr>
+        <tr>
             <td style="vertical-align: top;">
                 <q-card class="q-pa-md" v-if="type == 'recordList'">
                     <q-card-section>
-                        <q-table title="대여내역" :rows="record_list" :columns="record_columns" row-key="name">
+                        <q-table title="이용내역" :rows="record_list" :columns="record_columns" row-key="name">
 
                         </q-table>
                     </q-card-section>
@@ -65,19 +98,26 @@
      const app = Vue.createApp({
         data: function() {
             return {
+                start_date: null,
+                end_date: null,
                 step: 1,
 
                 user: {},
                 type: 'recordList',
 
                 menu_list: [
-                    { type: 'recordList', title: '대여내역', is_selected: true },
+                    { type: 'recordList', title: '이용내역 조회', is_selected: true },
                     { type: 'accountSet', title: '개인정보변경', is_selected: false },
                 ],
 
                 record_list: [],
                 record_columns: [
-                    { name: 'recordId', label: '번호', align: 'left', sortable: true },
+                    { name: 'recordId', label: '번호', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'recordId', label: '도서명', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'recordId', label: '대여일', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'recordId', label: '반납일', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'recordId', label: '반납예정일', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'recordId', label: '연체유무', field: 'recordId', align: 'left', sortable: true },
                 ]
             }
         },
@@ -110,7 +150,9 @@
         },
         mounted: function() {
             var vm = this;
-//            vm.load_record_list();
+            var today = new Date();
+            vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
+            vm.end_date = $p.formatDate(today);
         },
     });
 </script>

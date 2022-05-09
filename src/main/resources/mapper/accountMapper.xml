@@ -8,7 +8,7 @@
         select * from accounts where userId=#{id}
     </select>
     <select id="get_user_userId" resultType="com.example.bap.dto.AccountDto" parameterType="string">
-        select accountId, isAdmin, lastLoginDate, phoneNumber, status, userId from accounts where userId=#{userId}
+        select accountId, isAdmin, isReceiveMessage, telegramId, phoneNumber, userId from accounts where userId=#{userId}
     </select>
     <select id="get_user" resultType="com.example.bap.dto.AccountDto" parameterType="String">
         select * from accounts where userId=#{id} and password=#{pw}

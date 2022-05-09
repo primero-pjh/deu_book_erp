@@ -5,14 +5,11 @@ public class AccountDto {
     private String userId;
     private String password;
     private String phoneNumber;
-    private String lastLoginDate;
-    private String status;
-    private String isAdmin;
+    private String telegramId;
+    private int isAdmin;
+    private int isReceiveMessage;
 
-    public int getAccountId() {
-        return accountId;
-    }
-
+    public int getAccountId() {return accountId;}
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
@@ -41,27 +38,27 @@ public class AccountDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getLastLoginDate() {
-        return lastLoginDate;
+    public String getTelegramId() {
+        return telegramId;
     }
 
-    public void setLastLoginDate(String lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
+    public void setTelegramId(String telegramId) {
+        this.telegramId = telegramId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getIsAdmin() {
+    public int getIsAdmin() {
         return isAdmin;
     }
 
-    public void setIsAdmin(String isAdmin) {
+    public void setIsAdmin(int isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public int getIsReceiveMessage() {
+        return isReceiveMessage;
+    }
+
+    public void setIsReceiveMessage(int isReceiveMessage) {
+        this.isReceiveMessage = isReceiveMessage;
     }
 }
