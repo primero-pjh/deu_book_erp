@@ -1,24 +1,28 @@
 <script type="text/x-template" id="top_menu">
     <div>
-        <q-bar style="height: 45px;" class="bg-primary text-white">
+        <q-bar style="height: 74px; position: fixed; top: 0; width: 100%;" class="bg-grey-9 text-white">
             <div style="width: 200px; display: inline-flex;">
-                <q-btn dense flat icon="home" @click="location_href('/')"></q-btn>
-                <div class="text-weight-bold">
-                    deuERP
+                <div style="width: 100%; cursor:pointer;" class="text-weight-bold text-h4 text-center" @click="location_href('/')">
+                    DGP
                 </div>
             </div>
-            <div style="width: 100%; text-align: center;">
-                <q-tabs v-model="tab" dense inline-label class="text-white">
+            <q-space></q-space>
+            <div style="width: 100%; text-align: right;">
+                <q-tabs v-model="tab" dense inline-label class="text-white" style="font-size: 16px;">
                     <template v-for="row in menu_list">
                         <q-tab :name="row.url" :label="row.label" flat size="sm" @click="click_tab(row)"></q-tab>
                     </template>
                 </q-tabs>
             </div>
-            <q-space></q-space>
+
             <div style="width: 200px;">
                 <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>
                     <q-menu>
-                        <q-list style="min-width: 100px">
+                        <q-list style="min-width: 100px" class="text-center">
+                            <q-item clickable v-close-popup dense>
+                                <q-item-section @click="handleLogout">개인정보변경</q-item-section>
+                            </q-item>
+                            <q-separator></q-separator>
                             <q-item clickable v-close-popup dense>
                                 <q-item-section @click="handleLogout">로그아웃</q-item-section>
                             </q-item>
@@ -61,7 +65,7 @@
             click_tab: function(row) {
                 var vm = this;
                 vm.tab = row.url;
-<!--                $p.location_href(row.url);-->
+                $p.location_href(row.url);
             },
             location_href: function(url) {
                 $p.location_href(url);

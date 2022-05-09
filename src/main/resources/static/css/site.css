@@ -1,0 +1,1 @@
+@font-face {    font-family: 'KakaoRegular';    src : url('/static/font/kakao_fonts/KakaoRegular.ttf');}* {    font-family: 'KakaoRegular';    font-size: 16px;}html {    height: 100%;}body {    height: 100%;}#app {height: 100%;}.q-tab__label {    font-size: 22px;}

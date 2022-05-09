@@ -10,8 +10,8 @@
     <div id="app">
         <div style="width: 300px; height: 600px; position:absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);">
             <q-card>
-                <q-card-section>
-                    <img src="https://cdn.quasar.dev/img/mountains.jpg" style="width: 100%;">
+                <q-card-section style="text-align: center;">
+                    <h4>DGP</h4>
                 </q-card-section>
 
                 <q-separator class="q-my-md"></q-separator>
@@ -23,6 +23,10 @@
                     <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
                              :error="form_error.password.length > 0" :error-message="form_error.password" type="password">
                     </q-input>
+                    <q-checkbox right-label v-model="auto_login"
+                            label="자동 로그인" checked-icon="task_alt" unchecked-icon="highlight_off">
+
+                    </q-checkbox>
 <!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
                     <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
                 </q-card-section>
@@ -34,6 +38,9 @@
     </div>
     </body>
 </html>
+
+<style>
+</style>
 
 <script>
     const app = Vue.createApp({
@@ -49,6 +56,8 @@
                     userId: '',
                     password: '',
                 },
+
+                auto_login: false,
             }
         },
         methods: {

@@ -10,57 +10,55 @@
 
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)">
-        <q-card class="q-pa-md">
-            <table class="index_table">
-                <tr>
-                    <td @click="location_href('/rental')">
-                        <span>대여</span>
-                    </td>
-                    <td @click="location_href('/return')">
-                        <span>반납</span>
-                    </td>
-                    <td @click="location_href('/myPage')">
-                        <span>마이페이지</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td @click="location_href('/search')">
-                        <span>도서 검색</span>
-                    </td>
-                    <td v-if="account.isAdmin" @click="location_href('/setting')">
-                        <span>관리자메뉴</span>
-                    </td>
-                    <td v-else></td>
-
-                    <td v-if="account.isAdmin" @click="location_href('/bookManage')">
-                        도서 관리
-                    </td>
-                    <td v-else></td>
-                </tr>
-            </table>
-        </q-card>
+    <div style="margin-top: 74px; height: 100%; position: absolute; left: 50%; transform: translate(-50%);" class="q-pa-md">
+        <table class="index_table">
+            <tr>
+                <td @click="location_href('/rental')" class="animate__animated">
+                    <img style="width: 200px;" src="/static/images/rental.png" />
+                    <h5 style="margin: 0;">대여</h5>
+                </td>
+                <td @click="location_href('/return')" class="animate__animated">
+                    <img style="width: 200px;" src="/static/images/return.png" />
+                    <h5 style="margin: 0;">반납</h5>
+                </td>
+                <td @click="location_href('/myPage')" class="animate__animated">
+                    <img style="width: 200px;" src="/static/images/myPage_v2.png" />
+                    <h5 style="margin: 0;">마이페이지</h5>
+                </td>
+            </tr>
+            <tr>
+                <td @click="location_href('/search')" class="animate__animated">
+                    <img style="width: 200px;" src="/static/images/search.png" />
+                    <h5 style="margin: 0;">도서 검색</h5>
+                </td>
+                <td v-if="account.isAdmin" @click="location_href('/setting')" class="animate__animated">
+                    <img style="width: 200px;" src="/static/images/administration.png" />
+                    <h5 style="margin: 0;">관리자메뉴</h5>
+                </td>
+                <td v-else></td>
+                <td></td>
+            </tr>
+        </table>
     </div>
 </div>
 </body>
 </html>
 <style>
     .index_table {
-        border-collapse: collapse;
         width: 600px;
         text-align: center;
-        border-top: 1px solid black;
-        border-right: 1px solid black;
     }
     .index_table tr td {
         cursor: pointer;
-        border-left: 1px solid black;
-        border-bottom: 1px solid black;
         width: 150px;
         height: 150px;
+        padding: 40px;
     }
     .index_table tr td:hover {
-        background-color: #eee !important;
+        -webkit-animation-name: pulse;
+        animation-name: pulse;
+        -webkit-animation-timing-function: ease-in-out;
+        animation-timing-function: ease-in-out;
     }
 </style>
 
