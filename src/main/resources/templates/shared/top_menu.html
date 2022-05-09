@@ -8,9 +8,9 @@
             </div>
             <q-space></q-space>
             <div style="width: 100%; text-align: right;">
-                <q-tabs v-model="tab" dense inline-label class="text-white" style="font-size: 16px;">
+                <q-tabs v-model="tab" dense inline-label class="text-white" style="height: 74px;">
                     <template v-for="row in menu_list">
-                        <q-tab :name="row.url" :label="row.label" flat size="sm" @click="click_tab(row)"></q-tab>
+                        <q-tab :name="row.url" :label="row.label" flat size="sm" style="height: 74px;" @click="click_tab(row)"></q-tab>
                     </template>
                 </q-tabs>
             </div>
@@ -19,11 +19,11 @@
                 <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>
                     <q-menu>
                         <q-list style="min-width: 100px" class="text-center">
-                            <q-item clickable v-close-popup dense>
+                            <q-item clickable v-close-popup dense style="height: 40px">
                                 <q-item-section @click="handleLogout">개인정보변경</q-item-section>
                             </q-item>
                             <q-separator></q-separator>
-                            <q-item clickable v-close-popup dense>
+                            <q-item clickable v-close-popup dense style="height: 40px">
                                 <q-item-section @click="handleLogout">로그아웃</q-item-section>
                             </q-item>
                         </q-list>

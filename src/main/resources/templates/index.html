@@ -14,26 +14,36 @@
         <table class="index_table">
             <tr>
                 <td @click="location_href('/rental')" class="animate__animated">
-                    <img style="width: 200px;" src="/static/images/rental.png" />
-                    <h5 style="margin: 0;">대여</h5>
+                    <div class="bg-white shadow-2">
+                        <img style="width: 200px;" src="/static/images/rental.png" />
+                        <h5 style="margin: 0;">대여</h5>
+                    </div>
                 </td>
                 <td @click="location_href('/return')" class="animate__animated">
-                    <img style="width: 200px;" src="/static/images/return.png" />
-                    <h5 style="margin: 0;">반납</h5>
+                    <div  class="bg-white shadow-2">
+                        <img style="width: 200px;" src="/static/images/return.png" />
+                        <h5 style="margin: 0;">반납</h5>
+                    </div>
                 </td>
                 <td @click="location_href('/myPage')" class="animate__animated">
-                    <img style="width: 200px;" src="/static/images/myPage_v2.png" />
-                    <h5 style="margin: 0;">마이페이지</h5>
+                    <div class="bg-white shadow-2">
+                        <img style="width: 200px;" src="/static/images/myPage_v2.png" />
+                        <h5 style="margin: 0;">마이페이지</h5>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td @click="location_href('/search')" class="animate__animated">
-                    <img style="width: 200px;" src="/static/images/search.png" />
-                    <h5 style="margin: 0;">도서 검색</h5>
+                    <div class="bg-white shadow-2">
+                        <img style="width: 200px;" src="/static/images/search.png" />
+                        <h5 style="margin: 0;">도서 검색</h5>
+                    </div>
                 </td>
                 <td v-if="account.isAdmin" @click="location_href('/setting')" class="animate__animated">
-                    <img style="width: 200px;" src="/static/images/administration.png" />
-                    <h5 style="margin: 0;">관리자메뉴</h5>
+                    <div class="bg-white shadow-2">
+                        <img style="width: 200px;" src="/static/images/administration.png" />
+                        <h5 style="margin: 0;">관리자메뉴</h5>
+                    </div>
                 </td>
                 <td v-else></td>
                 <td></td>
