@@ -6,40 +6,62 @@
     </head>
 
     <body>
-    <head th:include="shared/libs.html"></head>
-    <div id="app">
-        <div style="width: 300px; height: 600px; position:absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);">
-            <q-card>
-                <q-card-section style="text-align: center;">
-                    <h4>DGP</h4>
-                </q-card-section>
+        <head th:include="shared/libs.html"></head>
+        <div id="app" style="background-color: white !important; position: absolute; top: 60%; left: 50%; transform: translate(-50%,-50%);">
+            <div style="display: inline-flex;">
+                <div>
+                    <img src="/static/images/login_bg_v2.png" style="width: 480px; height: 517.5px;">
+                </div>
+                <div style="width: 480px; height: 600px;" class="q-pl-md">
+                    <q-card style="padding: 60px 70px;">
+                        <q-card-section>
+                            <p style="font-size: 33px; margin: 0;">DGP</p>
+                        </q-card-section>
 
-                <q-separator class="q-my-md"></q-separator>
+                        <q-card-section>
+                            <q-input outlined v-model="form.userId" dense placeholder="아이디" class="q-mb-sm" @keyup.enter="handleLogin"
+                                    :error="form_error.userId.length > 0" :error-message="form_error.userId">
+                            </q-input>
+                            <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
+                                     :error="form_error.password.length > 0" :error-message="form_error.password" type="password">
+                            </q-input>
+                            <q-checkbox right-label v-model="auto_login" class="q-mb-md"
+                                    label="자동 로그인" checked-icon="task_alt" unchecked-icon="highlight_off">
 
-                <q-card-section>
-                    <q-input outlined v-model="form.userId" dense placeholder="아이디" class="q-mb-sm" @keyup.enter="handleLogin"
-                            :error="form_error.userId.length > 0" :error-message="form_error.userId">
-                    </q-input>
-                    <q-input outlined v-model="form.password" dense placeholder="비밀번호" class="q-mb-sm" @keyup.enter="handleLogin"
-                             :error="form_error.password.length > 0" :error-message="form_error.password" type="password">
-                    </q-input>
-                    <q-checkbox right-label v-model="auto_login"
-                            label="자동 로그인" checked-icon="task_alt" unchecked-icon="highlight_off">
-
-                    </q-checkbox>
-<!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
-                    <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
-                </q-card-section>
-                <q-card-section>
-                    <a href="/signup">회원가입</a>
-                </q-card-section>
-            </q-card>
+                            </q-checkbox>
+        <!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
+                            <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
+                        </q-card-section>
+                        <q-card-section>
+                            <div class="row">
+                                <a href="/signup">회원가입</a>
+                                <q-space></q-space>
+                                <a href="/signup">아이디/비밀번호 찾기</a>
+                            </div>
+                        </q-card-section>
+                    </q-card>
+                </div>
+            </div>
+            <q-bar class="bg-white text-black" style="border-top: 1px solid #e3e3e3;">
+                <div style="width: 100%;" class="text-center">
+                    Copyright © primero-pjh. All rights reserved.
+                </div>
+            </q-bar>
         </div>
-    </div>
     </body>
 </html>
 
 <style>
+    * {
+        font-family: 'KakaoRegular';
+
+    }
+    html {
+        background-color: white !important;
+    }
+    body {
+        background-color: white !important;
+    }
 </style>
 
 <script>
