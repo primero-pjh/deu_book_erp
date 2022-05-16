@@ -9,15 +9,12 @@ public class AccountDto {
     private int isAdmin;
     private int isReceiveMessage;
 
-    public int getAccountId() {return accountId;}
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
+    public int getAccountId() { return accountId; }
+    public void setAccountId(int accountId) { this.accountId = accountId; }
 
     public String getUserId() {
         return userId;
     }
-
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -25,7 +22,6 @@ public class AccountDto {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -33,7 +29,6 @@ public class AccountDto {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -41,7 +36,6 @@ public class AccountDto {
     public String getTelegramId() {
         return telegramId;
     }
-
     public void setTelegramId(String telegramId) {
         this.telegramId = telegramId;
     }
@@ -49,7 +43,6 @@ public class AccountDto {
     public int getIsAdmin() {
         return isAdmin;
     }
-
     public void setIsAdmin(int isAdmin) {
         this.isAdmin = isAdmin;
     }
@@ -57,7 +50,6 @@ public class AccountDto {
     public int getIsReceiveMessage() {
         return isReceiveMessage;
     }
-
     public void setIsReceiveMessage(int isReceiveMessage) {
         this.isReceiveMessage = isReceiveMessage;
     }

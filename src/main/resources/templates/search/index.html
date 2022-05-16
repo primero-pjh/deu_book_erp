@@ -10,24 +10,29 @@
 <script src="static/js/qrcodejs/qrcode.min.js"></script>
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <table style="width: 100%;">
+    <table style="width: 100%; margin-top: 74px;">
         <tr>
             <td>
-                <div class="q-pa-md">
-                    <div class="q-gutter-sm">
-                        <q-radio v-model="search_type" val="name" label="도서명"></q-radio>
-                        <q-radio v-model="search_type" val="writer" label="저자"></q-radio>
-                        <q-radio v-model="search_type" val="category" label="도서분류"></q-radio>
-                        <q-radio v-model="search_type" val="publisher" label="출판사"></q-radio>
-                    </div>
-                </div>
+                <q-expansion-item class="bg-white shadow-2" v-model="expanded" label="상세 검색">
+                    <q-card>
+                        <q-card-section>
+                            <div class="q-pa-md">
+                                <div class="q-gutter-sm">
+                                    <q-radio v-model="search_type" val="name" label="도서명"></q-radio>
+                                    <q-radio v-model="search_type" val="writer" label="저자"></q-radio>
+                                    <q-radio v-model="search_type" val="category" label="도서분류"></q-radio>
+                                    <q-radio v-model="search_type" val="publisher" label="출판사"></q-radio>
+                                </div>
+                            </div>
+                        </q-card-section>
+                    </q-card>
+                </q-expansion-item>
             </td>
-
         </tr>
         <tr>
             <td style="width: 100%;">
-                <q-card class="q-pa-md">
-                    <q-card-section>
+                <q-card >
+                    <q-card-section class="q-pa-md">
                         <div style="display: flex; width: 100%;">
                             <q-input outlined dense placeholder="Search" class="q-mr-sm" style="width: 100%;"></q-input>
                             <q-space></q-space>
@@ -35,7 +40,7 @@
                         </div>
                     </q-card-section>
                     <q-separator></q-separator>
-                    <q-card-section>
+                    <q-card-section class="q-pa-md">
                         <q-table ref="book_list"
                                  class="my-sticky-header-table"
                                  style="height: 600px" :filter="filter"
@@ -82,6 +87,7 @@
      const app = Vue.createApp({
         data: function() {
             return {
+                expanded: false,
                 search_type: 'name',
 
                 book_list: [],

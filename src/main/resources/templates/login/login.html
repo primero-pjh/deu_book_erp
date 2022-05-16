@@ -29,7 +29,6 @@
                                     label="자동 로그인" checked-icon="task_alt" unchecked-icon="highlight_off">
 
                             </q-checkbox>
-        <!--                    <q-checkbox v-model="isRemember" label="자동 로그인"></q-checkbox>-->
                             <q-btn label="로그인" color="primary" style="width: 100%;" @click="handleLogin"></q-btn>
                         </q-card-section>
                         <q-card-section>
@@ -41,21 +40,14 @@
                         </q-card-section>
                     </q-card>
                 </div>
+
             </div>
-            <q-bar class="bg-white text-black" style="border-top: 1px solid #e3e3e3;">
-                <div style="width: 100%;" class="text-center">
-                    Copyright © primero-pjh. All rights reserved.
-                </div>
-            </q-bar>
+            <q_footer ref="q_footer"></q_footer>
         </div>
     </body>
 </html>
 
 <style>
-    * {
-        font-family: 'KakaoRegular';
-
-    }
     html {
         background-color: white !important;
     }
@@ -63,7 +55,6 @@
         background-color: white !important;
     }
 </style>
-
 <script>
     const app = Vue.createApp({
         data: function() {
@@ -145,6 +136,9 @@
             }
         },
     });
+</script>
+<head th:include="shared/footer.html"></head>
+<script>
     app.use(Quasar, {
         config: {
             loading: {}

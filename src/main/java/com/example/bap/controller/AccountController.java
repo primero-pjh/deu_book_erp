@@ -26,10 +26,6 @@ import java.util.*;
 @Controller
 public class AccountController {
     @Autowired
-    private BookMapper bookMapper;
-    @Autowired
-    private RecordMapper recordMapper;
-    @Autowired
     private AccountMapper accountMapper;
 
     final String key = "!@#$%^&*09128340913890123890";
@@ -124,6 +120,101 @@ public class AccountController {
 
         obj.setSuccess(1);
         obj.setUser(user);
+        return obj;
+    }
+
+    @RequestMapping(value = "/api/user/check/password", method = RequestMethod.GET)
+    public @ResponseBody ReturnData checkPassword(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        String token = req.getParameter("token");
+        try {
+            var result = verifyJWT(token);
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
+            System.out.println("토큰이 만료되었을 경우");
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        } catch (Exception e) { // 그외 에러났을 경우
+            System.out.println("그외 에러났을 경우");
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        }
+
+        String password = req.getParameter("password");
+        String userId = req.getParameter("userId");
+        var error = new HashMap<String, String>();
+        if(StringUtils.isNullOrEmpty(password)) { error.put("password", "필수입력 항목입니다."); }
+        if(error.size() > 0) {
+            obj.setSuccess(0);
+            obj.setError(error);
+            return obj;
+        }
+
+        AccountDto user = new AccountDto();
+        user = accountMapper.get_user_userId(userId);
+
+        if(user == null) {
+            obj.setSuccess(0);
+            obj.setMessage("로그인 토큰 만료되었습니다. 다시 로그인 해주세요.");
+            return obj;
+        }
+
+        if(user.getPassword().toString().equals(password)) {
+            obj.setSuccess(1);
+        } else {
+            obj.setSuccess(0);
+            obj.setMessage("비밀번호를 잘못 입력하였습니다.");
+        }
+        return obj;
+    }
+
+    @RequestMapping(value = "/api/user/change/password", method = RequestMethod.GET)
+    public @ResponseBody ReturnData changePassword(HttpServletRequest req) {
+        ReturnData obj = new ReturnData();
+        String token = req.getParameter("token");
+        try {
+            var result = verifyJWT(token);
+        } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
+            System.out.println("토큰이 만료되었을 경우");
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        } catch (Exception e) { // 그외 에러났을 경우
+            System.out.println("그외 에러났을 경우");
+            obj.setSuccess(0);
+            obj.setLogged(false);
+            return obj;
+        }
+
+        String new_password = req.getParameter("new_password");
+        String new_password_confirm = req.getParameter("new_password_confirm");
+        String userId = req.getParameter("userId");
+        var error = new HashMap<String, String>();
+        if(StringUtils.isNullOrEmpty(new_password)) { error.put("new_password", "필수입력 항목입니다."); }
+        if(StringUtils.isNullOrEmpty(new_password_confirm)) { error.put("new_password_confirm", "필수입력 항목입니다."); }
+        if(error.size() > 0) {
+            obj.setSuccess(0);
+            obj.setError(error);
+            return obj;
+        }
+
+        AccountDto user = new AccountDto();
+        user = accountMapper.get_user_userId(userId);
+        if(user == null) {
+            obj.setSuccess(0);
+            obj.setMessage("로그인 토큰 만료되었습니다. 다시 로그인 해주세요.");
+            return obj;
+        }
+
+        System.out.println(new_password);
+        if(new_password.equals(new_password_confirm)) {
+            accountMapper.updateAccount(user.getUserId(), new_password);
+            obj.setSuccess(1);
+        } else {
+            obj.setSuccess(0);
+            obj.setMessage("비밀번호를 잘못 입력하였습니다.");
+        }
         return obj;
     }
 

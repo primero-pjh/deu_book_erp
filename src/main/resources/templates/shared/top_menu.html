@@ -3,15 +3,23 @@
         <q-bar style="height: 74px; position: fixed; top: 0; width: 100%; z-index: 1000;"
                class="bg-grey-9 text-white">
             <div style="width: 200px; display: inline-flex;">
-                <div style="width: 100%; cursor:pointer;" class="text-weight-bold text-h4 text-center" @click="location_href('/')">
+                <div style="width: 100%; cursor:pointer;" class="text-weight-bold text-h4 text-center kf" @click="location_href('/')">
                     DGP
                 </div>
             </div>
             <q-space></q-space>
             <div style="width: 100%; text-align: right;">
-                <q-tabs v-model="tab" dense inline-label class="text-white" style="height: 74px;">
+                <q-tabs v-model="tab" dense inline-label class="text-white kf" style="height: 74px;">
                     <template v-for="row in menu_list">
-                        <q-tab :name="row.url" :label="row.label" flat size="sm" style="height: 74px;" @click="click_tab(row)"></q-tab>
+                        <template v-if="row.is_admin == true">
+                            <template v-if="account.isAdmin">
+                                <q-tab :name="row.url" :label="row.label" flat size="sm" style="height: 74px;" @click="click_tab(row)"></q-tab>
+                            </template>
+                        </template>
+                        <template v-else>
+                            <q-tab :name="row.url" :label="row.label" flat size="sm" style="height: 74px;" @click="click_tab(row)"></q-tab>
+                        </template>
+
                     </template>
                 </q-tabs>
             </div>
@@ -19,12 +27,12 @@
             <div style="width: 200px;">
                 <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>
                     <q-menu>
-                        <q-list style="min-width: 100px" class="text-center">
-                            <q-item clickable v-close-popup dense style="height: 40px">
+                        <q-list style="min-width: 100px" class="text-center kf" >
+                            <q-item clickable v-close-popup dense style="height: 40px;">
                                 <q-item-section @click="handleLogout">개인정보변경</q-item-section>
                             </q-item>
                             <q-separator></q-separator>
-                            <q-item clickable v-close-popup dense style="height: 40px">
+                            <q-item clickable v-close-popup dense style="height: 40px;">
                                 <q-item-section @click="handleLogout">로그아웃</q-item-section>
                             </q-item>
                         </q-list>
@@ -53,12 +61,12 @@
                 },
 
                 menu_list: [
-                    { label: '대여', icon: '', url: '/rental' },
-                    { label: '반납', icon: '', url: '/return' },
-                    { label: '마이페이지', icon: '', url: '/myPage' },
-                    { label: '도서검색', icon: '', url: '/search' },
-                    { label: '관리자메뉴', icon: '', url: '/setting' },
-                    { label: '도서관리', icon: '', url: '/bookManage' },
+                    { label: '대여', icon: '', url: '/rental', is_admin: false },
+                    { label: '반납', icon: '', url: '/return', is_admin: false },
+                    { label: '마이페이지', icon: '', url: '/myPage', is_admin: false },
+                    { label: '도서검색', icon: '', url: '/search', is_admin: false },
+                    { label: '관리자메뉴', icon: '', url: '/setting', is_admin: true },
+                    //{ label: '도서관리', icon: '', url: '/bookManage', is_admin: true },
                 ],
             }
         },

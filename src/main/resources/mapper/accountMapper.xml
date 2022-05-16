@@ -8,16 +8,13 @@
         select * from accounts where userId=#{id}
     </select>
     <select id="get_user_userId" resultType="com.example.bap.dto.AccountDto" parameterType="string">
-        select accountId, isAdmin, isReceiveMessage, telegramId, phoneNumber, userId from accounts where userId=#{userId}
+        select * from accounts where userId=#{userId}
     </select>
     <select id="get_user" resultType="com.example.bap.dto.AccountDto" parameterType="String">
         select * from accounts where userId=#{id} and password=#{pw}
     </select>
-    <delete id="bookDelete" parameterType="Int">
-        delete from books where bookId=#{id}
-    </delete>
-    <update id="bookUpdate">
-        update books set name="박재현", status=0 where bookId=7
+    <update id="updateAccount" parameterType="String">
+        UPDATE accounts set password=#{password} where userId=#{userId}
     </update>
     <insert id="sign_up" parameterType="String">
         insert into accounts (userId, password, phoneNumber, status, isAdmin) values (#{userId}, #{password}, #{phoneNumber}, 1, 0)

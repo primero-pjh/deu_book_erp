@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>홈화면</title>
+    <title>마이페이지</title>
 </head>
 
 <body>
@@ -10,86 +10,104 @@
 
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <table style="width: 100%; margin-top: 74px;">
-        <tr>
-            <td rowspan="2" style="width: 200px; vertical-align: top;">
-                <q-list bordered>
-                    <template v-for="row in menu_list">
-                        <q-item  clickable v-ripple @click="select_type(row)" :active="row.is_selected">
-                            <q-item-section>{{row.title}}</q-item-section>
-                        </q-item>
-                        <q-separator></q-separator>
-                    </template>
+    <q-card>
+        <q-card-section>
+            <table style="width: 100%; margin-top: 74px;">
+                <tr>
+                    <td rowspan="2" style="width: 200px; vertical-align: top;">
+                        <q-list bordered class="kf">
+                            <template v-for="row in menu_list">
+                                <q-item  clickable v-ripple @click="select_type(row)" :active="row.is_selected">
+                                    <q-item-section>{{row.title}}</q-item-section>
+                                </q-item>
+                                <q-separator></q-separator>
+                            </template>
+                        </q-list>
+                    </td>
+                    <td class="q-pl-md">
+                        <div style="width: 100%; display: flex;">
+                            <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
+                                <template v-slot:append>
+                                    <q-icon name="event" class="cursor-pointer">
+                                        <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                            <q-date v-model="start_date">
+                                                <div class="row items-center justify-end">
+                                                    <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                                </div>
+                                            </q-date>
+                                        </q-popup-proxy>
+                                    </q-icon>
+                                </template>
+                            </q-input>
+                            ~
+                            <q-input filled dense v-model="end_date" mask="date" :rules="['date']" style="width: 200px;">
+                                <template v-slot:append>
+                                    <q-icon name="event" class="cursor-pointer">
+                                        <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                                            <q-date v-model="end_date">
+                                                <div class="row items-center justify-end">
+                                                    <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                                                </div>
+                                            </q-date>
+                                        </q-popup-proxy>
+                                    </q-icon>
+                                </template>
+                            </q-input>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;" class="q-pl-md">
+                        <template v-if="type == 'recordList'">
+                            <q-table title="이용내역" :rows="record_list" :columns="record_columns" row-key="name">
 
-                </q-list>
-            </td>
-            <td>
-                <div style="width: 100%; display: flex;">
-                    <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
-                        <template v-slot:append>
-                            <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="start_date">
-                                        <div class="row items-center justify-end">
-                                            <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
-                                        </div>
-                                    </q-date>
-                                </q-popup-proxy>
-                            </q-icon>
+                            </q-table>
                         </template>
-                    </q-input>
-                    ~
-                    <q-input filled dense v-model="end_date" mask="date" :rules="['date']" style="width: 200px;">
-                        <template v-slot:append>
-                            <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="end_date">
-                                        <div class="row items-center justify-end">
-                                            <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
-                                        </div>
-                                    </q-date>
-                                </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">
-                <q-card class="q-pa-md" v-if="type == 'recordList'">
-                    <q-card-section>
-                        <q-table title="이용내역" :rows="record_list" :columns="record_columns" row-key="name">
+                        <q-card class="q-pa-md" v-else-if="type == 'accountSet'">
+                            <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated>
+                                <q-step :name="1" title="비밀번호 입력" icon="edit" :done="step > 1">
+                                    <p>현재 비밀번호를 입력하세요.</p>
+                                    <q-input outlined v-model="form.password" dense placeholder="비밀번호"
+                                             @keyup.enter="checkPassword" type="password"
+                                             :error="form_error.password.length > 0" :error-message="form_error.password">
+                                    </q-input>
+                                </q-step>
 
-                        </q-table>
-                    </q-card-section>
-                </q-card>
-                <q-card class="q-pa-md" v-else-if="type == 'accountSet'">
-                    <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated>
-                        <q-step :name="1" title="비밀번호 입력" icon="settings" :done="step > 1">
-                            비밀번호를 입력하세요.
-                        </q-step>
+                                <q-step :name="2" title="새로운 비밀번호 입력" icon="edit" :done="step > 2">
 
-                        <q-step :name="2" title="Create an ad group" caption="Optional" icon="create_new_folder" :done="step > 2">
-                            바꿀 비밀번호와, 번호를 입력하세요.
-                        </q-step>
+                                    <p>새로운 비밀번호를 입력하세요.</p>
+                                    <q-input outlined v-model="form.new_password" dense placeholder="새로운 비밀번호"
+                                             @keyup.enter="changePassword" type="password"
+                                             :error="form_error.new_password.length > 0" :error-message="form_error.new_password">
+                                    </q-input>
 
-                        <q-step :name="3" title="Create an ad" icon="add_comment">
-                            완료!
-                        </q-step>
+                                    <q-input outlined v-model="form.new_password_confirm" dense placeholder="새로운 비밀번호 재입력"
+                                             @keyup.enter="changePassword" type="password"
+                                             :error="form_error.new_password_confirm.length > 0" :error-message="form_error.new_password_confirm">
+                                    </q-input>
+                                </q-step>
 
-                        <template v-slot:navigation>
-                            <q-stepper-navigation>
-                                <q-btn @click="$refs.stepper.next()" color="primary" :label="step === 3 ? '로그인 페이지로 이동' : '진행'"></q-btn>
-                                <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="뒤로가기" class="q-ml-sm"></q-btn>
-                            </q-stepper-navigation>
-                        </template>
-                    </q-stepper>
-                </q-card>
+                                <q-step :name="3" title="완료" icon="done">
+                                    완료!
+                                </q-step>
 
-            </td>
-        </tr>
-    </table>
+                                <template v-slot:navigation>
+                                    <q-stepper-navigation>
+                                        <q-btn @click="checkPassword" color="primary" v-if="step == 1" label="진행"></q-btn>
+                                        <q-btn @click="changePassword" color="primary" v-else-if="step == 2" label="진행"></q-btn>
+                                        <q-btn @click="$p.location_href('/login')" color="primary" v-else-if="step == 3" label="로그인 페이지로 이동"></q-btn>
+                                        <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="뒤로가기" class="q-ml-sm"></q-btn>
+                                    </q-stepper-navigation>
+                                </template>
+                            </q-stepper>
+                        </q-card>
+
+                    </td>
+                </tr>
+            </table>
+        </q-card-section>
+    </q-card>
+
 </div>
 </body>
 </html>
@@ -98,6 +116,18 @@
      const app = Vue.createApp({
         data: function() {
             return {
+                form: {
+                    password: '',
+                    new_password: '',
+                    new_password_confirm: '',
+                },
+                form_error: {
+                    password: '',
+                    new_password: '',
+                    new_password_confirm: '',
+                },
+
+
                 start_date: null,
                 end_date: null,
                 step: 1,
@@ -122,6 +152,77 @@
             }
         },
         methods: {
+            checkPassword: function() {
+                var vm = this;
+                axios.get("/api/user/check/password", {
+                    params: {
+                        userId: vm.$refs.top_menu.account.userId,
+                        password: vm.form.password,
+                        token: $p.getToken('jwt')
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 0 && data.is_logged == false) {
+                        $p.location_href('/');
+                    }
+                    if(data.success) {
+                        vm.$refs.stepper.next();
+                    } else {
+                        vm.form.password = "";
+                        if(data.error) {
+                            for(var k in data.error) {
+                                vm.form_error[k] = data.error[k];
+                            }
+                        }
+                        if(data.message) {
+                            vm.$q.dialog({
+                                title: '에러',
+                                message: data.message
+                            }).onOk(() => {
+
+                            });
+                        }
+                    }
+                });
+            },
+            changePassword: function() {
+                var vm = this;
+                console.log("changePassword:");
+                axios.get("/api/user/change/password", {
+                    params: {
+                        userId: vm.$refs.top_menu.account.userId,
+                        new_password: vm.form.new_password,
+                        new_password_confirm: vm.form.new_password_confirm,
+                        token: $p.getToken('jwt')
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    console.log("data:", data);
+                    if(data.success == 0 && data.is_logged == false) {
+                        $p.location_href('/');
+                    }
+                    if(data.success) {
+                        vm.$refs.stepper.next();
+                        $p.deleteToken('jwt');
+                    } else {
+                        vm.form.new_password = "";
+                        vm.form.new_password_confirm = "";
+                        if(data.error) {
+                            for(var k in data.error) {
+                                vm.form_error[k] = data.error[k];
+                            }
+                        }
+                        if(data.message) {
+                            vm.$q.dialog({
+                                title: '에러',
+                                message: data.message
+                            }).onOk(() => {
+
+                            });
+                        }
+                    }
+                });
+            },
             select_type: function(row) {
                 var vm = this;
                 for(var i=0; i<vm.menu_list.length; i++) {
@@ -144,7 +245,22 @@
                     if(data.success) {
                         var row = data.record_list;
                         vm.record_list = row;
+                    } else {
+                        if(data.error) {
+                            for(var k in data.error) {
+                                vm.form_error[k] = data.error[k];
+                            }
+                        }
+                        if(data.message) {
+                            vm.$q.dialog({
+                                title: '에러',
+                                message: data.message
+                            }).onOk(() => {
+
+                            });
+                        }
                     }
+
                 });
             },
         },
@@ -153,6 +269,8 @@
             var today = new Date();
             vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
             vm.end_date = $p.formatDate(today);
+
+            //vm.load_record_list();
         },
     });
 </script>

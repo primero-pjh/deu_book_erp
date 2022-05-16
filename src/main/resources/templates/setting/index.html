@@ -10,36 +10,46 @@
 
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <table style="width: 100%;">
-        <tr>
-            <td style="width: 200px; vertical-align: top;" >
-                <div>
-                    <q-list bordered separator>
-                        <template v-for="row in menu_list">
-                            <q-item clickable v-ripple @click="click_menu(row)"
-                                    :active="row.is_selected">
-                                <q-item-section>
-                                    <p style="font-weight: bold;">{{row.keyword2}}</p>
-                                </q-item-section>
-                            </q-item>
-                        </template>
-                    </q-list>
-                </div>
-            </td>
-            <td style="vertical-align: top;">
-                <q-card>
-                    <q-card-section>
+    <q-card>
+        <q-card-section>
+            <table style="width: 100%; margin-top: 74px;">
+                <tr>
+                    <td style="width: 200px; vertical-align: top;" >
+                        <div>
+                            <q-list bordered separator>
+                                <template v-for="row in menu_list">
+                                    <q-item clickable v-ripple @click="click_menu(row)" :active="row.is_selected">
+                                        <q-item-section>
+                                            <p style="font-weight: bold;">{{row.keyword2}}</p>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                                <q-item clickable v-ripple @click="click_menu()">
+                                    <q-item-section>
+                                        <p style="font-weight: bold;">연체기록 관리</p>
+                                    </q-item-section>
+                                </q-item>
+                                <q-item clickable v-ripple @click="click_menu()">
+                                    <q-item-section>
+                                        <p style="font-weight: bold;">도서관리</p>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </div>
+                    </td>
+                    <td style="vertical-align: top;" class="q-pl-md">
                         <div>
                             <span>{{form.keyword2}}</span>
                             <q-input outlined dense v-model="form.value"></q-input>
                             <br/>
                             <q-btn @click="handleSave">저장</q-btn>
                         </div>
-                    </q-card-section>
-                </q-card>
-            </td>
-        </tr>
-    </table>
+                    </td>
+                </tr>
+            </table>
+        </q-card-section>
+    </q-card>
+
 </div>
 </body>
 </html>
