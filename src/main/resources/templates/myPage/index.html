@@ -13,7 +13,7 @@
     <q-card>
         <q-card-section>
             <table style="width: 100%; margin-top: 74px;">
-                <tr>
+                <tr >
                     <td rowspan="2" style="width: 200px; vertical-align: top;">
                         <q-list bordered class="kf">
                             <template v-for="row in menu_list">
@@ -25,7 +25,7 @@
                         </q-list>
                     </td>
                     <td class="q-pl-md">
-                        <div style="width: 100%; display: flex;">
+                        <div style="width: 100%; display: flex;" v-if="type == 'recordList'"    >
                             <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
                                 <template v-slot:append>
                                     <q-icon name="event" class="cursor-pointer">

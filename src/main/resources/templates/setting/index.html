@@ -14,35 +14,36 @@
         <q-card-section>
             <table style="width: 100%; margin-top: 74px;">
                 <tr>
-                    <td style="width: 200px; vertical-align: top;" >
+                    <td style="width: 250px; vertical-align: top;" >
                         <div>
-                            <q-list bordered separator>
-                                <template v-for="row in menu_list">
-                                    <q-item clickable v-ripple @click="click_menu(row)" :active="row.is_selected">
+                            <q-list bordered class="rounded-borders">
+
+                                <q-expansion-item :content-inset-level="0.5" label="제약조건" default-opened>
+                                    <q-list>
+                                        <template v-for="row in setting_list">
+                                            <q-item icon="noise_control_off" clickable v-ripple @click="click_setting(row)" :active="row.is_selected">
+                                                <q-item-section>{{row.keyword2}}</q-item-section>
+                                            </q-item>
+                                            <q-separator></q-separator>
+                                        </template>
+                                    </q-list>
+
+                                </q-expansion-item>
+
+                                    <q-item clickable v-ripple>
                                         <q-item-section>
-                                            <p style="font-weight: bold;">{{row.keyword2}}</p>
+                                            연체기록 조회
                                         </q-item-section>
                                     </q-item>
-                                </template>
-                                <q-item clickable v-ripple @click="click_menu()">
-                                    <q-item-section>
-                                        <p style="font-weight: bold;">연체기록 관리</p>
-                                    </q-item-section>
-                                </q-item>
-                                <q-item clickable v-ripple @click="click_menu()">
-                                    <q-item-section>
-                                        <p style="font-weight: bold;">도서관리</p>
-                                    </q-item-section>
-                                </q-item>
+
                             </q-list>
+
                         </div>
                     </td>
                     <td style="vertical-align: top;" class="q-pl-md">
-                        <div>
-                            <span>{{form.keyword2}}</span>
+                        <div v-if="type == 'MaxRentalCount'">
                             <q-input outlined dense v-model="form.value"></q-input>
                             <br/>
-                            <q-btn @click="handleSave">저장</q-btn>
                         </div>
                     </td>
                 </tr>
@@ -65,8 +66,10 @@
                     keyword2: '',
                     value: '',
                 },
+                type: '',
+
                 select_menu: 'MaxRenderDateValue',
-                menu_list: [
+                setting_list: [
 
                 ],
             }
@@ -75,8 +78,17 @@
             location_href: function(url) {
                 window.location.href = '/' + url;
             },
-            click_menu: function(row) {
+            click_setting: function(row) {
                 var vm = this;
+                for(var i=0; i<vm.setting_list.length; i++) {
+                    vm.setting_list[i].is_selected = false;
+                }
+                row.is_selected = true;
+                vm.load_setting(row.settingId);
+            },
+            click_menu: function(type, row) {
+                var vm = this;
+                vm.type = type;
                 vm.select_menu = row.title;
                 for(var i=0; i<vm.menu_list.length; i++) {
                     vm.menu_list[i].is_selected = false;
@@ -92,7 +104,7 @@
                 }).then(function(res) {
                     var row = res.data;
                     for(var i=0; i<row.length; i++) {
-                        vm.menu_list.push({
+                        vm.setting_list.push({
                             settingId: row[i].settingId,
                             keyword: row[i].keyword,
                             keyword2: row[i].keyword2,
@@ -100,8 +112,8 @@
                             is_selected: false,
                         });
                     }
-                    vm.menu_list[0].is_selected = true;
-                    vm.load_setting(vm.menu_list[0].settingId);
+                    vm.setting_list[0].is_selected = true;
+                    vm.load_setting(vm.setting_list[0].settingId);
                 });
             },
             load_setting: function(settingId) {
