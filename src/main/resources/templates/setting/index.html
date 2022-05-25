@@ -18,31 +18,38 @@
                         <div>
                             <q-list bordered class="rounded-borders">
 
-                                <q-expansion-item :content-inset-level="0.5" label="제약조건" default-opened>
+                                <q-expansion-item :content-inset-level="0.5" label="제약조건 수정" default-opened>
                                     <q-list>
                                         <template v-for="row in setting_list">
                                             <q-item icon="noise_control_off" clickable v-ripple @click="click_setting(row)" :active="row.is_selected">
                                                 <q-item-section>{{row.keyword2}}</q-item-section>
                                             </q-item>
-                                            <q-separator></q-separator>
                                         </template>
                                     </q-list>
-
                                 </q-expansion-item>
+                                <q-separator></q-separator>
 
-                                    <q-item clickable v-ripple>
-                                        <q-item-section>
-                                            연체기록 조회
-                                        </q-item-section>
-                                    </q-item>
+                                <q-item clickable v-ripple>
+                                    <q-item-section>
+                                        연체기록 관리
+                                    </q-item-section>
+                                </q-item>
+                                <q-separator></q-separator>
+                                <q-item clickable v-ripple>
+                                    <q-item-section>
+                                        도서 관리
+                                    </q-item-section>
+                                </q-item>
 
                             </q-list>
 
                         </div>
                     </td>
                     <td style="vertical-align: top;" class="q-pl-md">
-                        <div v-if="type == 'MaxRentalCount'">
+                        <div v-if="type == 'setting'">
+                            <p>{{form.keyword2}}</p>
                             <q-input outlined dense v-model="form.value"></q-input>
+                            <q-btn color="primary" label="저장"></q-btn>
                             <br/>
                         </div>
                     </td>
@@ -66,24 +73,23 @@
                     keyword2: '',
                     value: '',
                 },
-                type: '',
+                type: 'setting',
 
-                select_menu: 'MaxRenderDateValue',
-                setting_list: [
-
-                ],
+                select_menu: 'MaxRentalCount',
+                setting_list: [],
             }
         },
         methods: {
             location_href: function(url) {
                 window.location.href = '/' + url;
             },
-            click_setting: function(row) {
+            click_setting: function(row, type) {
                 var vm = this;
                 for(var i=0; i<vm.setting_list.length; i++) {
                     vm.setting_list[i].is_selected = false;
                 }
                 row.is_selected = true;
+                vm.type = 'setting';
                 vm.load_setting(row.settingId);
             },
             click_menu: function(type, row) {
