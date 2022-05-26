@@ -38,21 +38,23 @@
         </div>
         <div v-else>
             <q-card class="my-card">
-                <img src="https://cdn.quasar.dev/img/mountains.jpg">
-
-                <q-card-section class="q-pt-none">
-                    <div>
-                        도서번호: {{form.bookId}}
-                    </div>
-                    <div>
-                        도서명: {{form.name}}
-                    </div>
-                    <div>
-                        저자: {{form.writer}}
-                    </div>
-                    <div>
-                        출판사: {{form.publisher}}
-                    </div>
+                <q-card-section>
+                    <q-img :src="form.image">
+                        <div class="absolute-bottom text-subtitle1 text-center">
+                            <div>
+                                도서명: {{form.name}}
+                            </div>
+                            <div>
+                                저자: {{form.writer}}
+                            </div>
+                            <div>
+                                출판사: {{form.publisher}}
+                            </div>
+                            <div>
+                                반납예정일: {{returnDueDateView}}
+                            </div>
+                        </div>
+                    <q-img>
                 </q-card-section>
             </q-card>
             <div style="text-align: center;" class="q-mt-sm">

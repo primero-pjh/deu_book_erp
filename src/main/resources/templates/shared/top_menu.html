@@ -94,7 +94,7 @@
                     }
                 }).then(function(res) {
                     var data = res.data;
-                    if(data.success == 0) {
+                    if(data.success == 0 && data.hasOwnProperty('isLogged')) {
                         $p.deleteToken("jwt");
                         $p.location_href('/login');
                     }

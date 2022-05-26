@@ -253,7 +253,11 @@ public class AccountController {
                 token = cookie.getValue();
             }
         }
-
+//        if(StringUtils.isNullOrEmpty(token) == true) {
+//            obj.setSuccess(0);
+//            obj.setLogged(false);
+//            return obj;
+//        }
         Map<String, Object> user = null;
         try {
             Claims claims = Jwts.parser()

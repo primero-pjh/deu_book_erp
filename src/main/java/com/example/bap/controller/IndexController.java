@@ -13,50 +13,50 @@ import java.util.List;
 public class IndexController {
     @Autowired
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
-    public String renderSettingPage() { return "/setting/index"; }
+    public String renderSettingPage() { return "setting/index"; }
 
     @RequestMapping(value = "/rental", method = RequestMethod.GET)
     public String renderRentalPage() {
-        return "/rental/index";
+        return "rental/index";
     }
 
     @RequestMapping(value = "/return", method = RequestMethod.GET)
     public String renderReturnPage() {
-        return "/return/index";
+        return "return/index";
     }
 
     @RequestMapping(value = "/qrMaker", method = RequestMethod.GET)
     public String renderQRMakerPage() {
-        return "/qrMaker/index";
+        return "qrMaker/index";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String renderLoginPage() {
-        return "/login/login";
+        return "login/login";
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public String renderSignUpPage() {
-        return "/signup/signup";
+        return "signup/signup";
     }
 
     @RequestMapping(value = "/myPage", method = RequestMethod.GET)
     public String rendermyPage() {
-        return "/myPage/index";
+        return "myPage/index";
     }
 
     @RequestMapping(value = "/bookManage", method = RequestMethod.GET)
     public String renderbookManagePage() {
-        return "/bookManage/index";
+        return "bookManage/index";
     }
 
     @RequestMapping(value = "/overDueManage", method = RequestMethod.GET)
     public String renderoverDueManagePage() {
-        return "/overDueManage/index";
+        return "overDueManage/index";
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String rendersearchPage() {
-        return "/search/index";
+        return "search/index";
     }
 }
