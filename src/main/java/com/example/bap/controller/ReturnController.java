@@ -117,6 +117,11 @@ public class ReturnController {
             recordMapper.Return(record);
         }
 
+        // book의 status를 변경한다 (0=>1);
+        BookDto b = bookMapper.BookReadOne(bookId);
+        b.setStatus(1);
+        bookMapper.UpdateBook(b);
+
         obj.setSuccess(1);
         obj.setMessage("반납완료");
         return obj;

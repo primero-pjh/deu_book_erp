@@ -7,4 +7,7 @@
     <select id="BookReadAll" resultType="com.example.bap.dto.BookDto">
         select * from books
     </select>
+    <update id="UpdateBook" parameterType="com.example.bap.dto.BookDto">
+        update books set status=#{status} where bookId=#{bookId}
+    </update>
 </mapper>

@@ -36,7 +36,7 @@ public class RentalController {
 //        return setting_list;
 //    }
 
-    public class BookReadOneData {
+    public class ReturnData {
         public int success;
         public BookDto bookDto;
         public int state;
@@ -67,10 +67,10 @@ public class RentalController {
     }
 
     @RequestMapping(value = "api/rental/{bookId}", method = RequestMethod.POST)
-    public @ResponseBody BookReadOneData Rental(@PathVariable int bookId,
+    public @ResponseBody ReturnData Rental(@PathVariable int bookId,
                                                      HttpServletRequest httpServletRequest) {
         BookDto book = bookMapper.BookReadOne(bookId);
-        var obj = new BookReadOneData();
+        var obj = new ReturnData();
         int accountId = Integer.parseInt(httpServletRequest.getParameter("accountId"));
         if(accountId == 0) {
             obj.setSuccess(0);
@@ -97,7 +97,6 @@ public class RentalController {
 
         // 만약 이미 대여한 책이라면 대여가 불가능하다.
         var my_record_with_bookId_count = recordMapper.MyRecordWithBookIdCount(accountId, bookId);
-        System.out.println(my_record_with_bookId_count);
         if(my_record_with_bookId_count != 0) {
             obj.setSuccess(0);
             obj.setState(100);
@@ -147,6 +146,11 @@ public class RentalController {
         record.setReturnDueDate(returnDueDate);
         record.setOverDue(0);
         recordMapper.RentalInsert(record);
+
+        // book의 status를 변경한다 (1=>0);
+        BookDto b = bookMapper.BookReadOne(bookId);
+        b.setStatus(0);
+        bookMapper.UpdateBook(b);
 
         obj.setSuccess(1);
         obj.setBookDto(book);

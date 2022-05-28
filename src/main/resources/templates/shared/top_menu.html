@@ -19,25 +19,31 @@
                         <template v-else>
                             <q-tab :name="row.url" :label="row.label" flat size="sm" style="height: 74px;" @click="click_tab(row)"></q-tab>
                         </template>
-
                     </template>
                 </q-tabs>
             </div>
 
             <div style="width: 200px;">
-                <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>
+                <q-chip color="dark" text-color="white">
+                    <q-avatar>
+                        <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                    </q-avatar>
+                    {{account.userId}}
                     <q-menu>
                         <q-list style="min-width: 100px" class="text-center kf" >
-                            <q-item clickable v-close-popup dense style="height: 40px;">
+                            <q-item clickable v-close-popup dense style="height: 45px;">
                                 <q-item-section @click="handleLogout">개인정보변경</q-item-section>
                             </q-item>
                             <q-separator></q-separator>
-                            <q-item clickable v-close-popup dense style="height: 40px;">
+                            <q-item clickable v-close-popup dense style="height: 45px;">
                                 <q-item-section @click="handleLogout">로그아웃</q-item-section>
                             </q-item>
                         </q-list>
                     </q-menu>
-                </q-btn>
+                </q-chip>
+<!--                <q-btn :label="account.userId" icon="person" class="text-white" label="account.userId" flat>-->
+
+<!--                </q-btn>-->
             </div>
         </q-bar>
     </div>

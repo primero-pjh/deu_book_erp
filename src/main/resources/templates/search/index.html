@@ -13,11 +13,39 @@
     <table style="width: 100%; margin-top: 74px;">
         <tr>
             <td>
+
+                <div>
+                    <div class="bg-white text-center" style="width: 100%;">
+                        <p class="text-h5" style="margin-bottom: 0;">베스트 셀러</p>
+                    </div>
+                    <q-carousel animated v-model="slide" style="height: 520px;"
+                                navigation infinite :autoplay="autoplay"
+                                arrows transition-prev="slide-right" transition-next="slide-left"
+                                @mouseenter="autoplay = false" @mouseleave="autoplay=true"
+                                control-color="black">
+                        <template v-for="row, idx in best_list">
+                            <q-carousel-slide :name="row.index" class="text-center">
+                                <q-img :src="row.image" style="border: 1px solid black; width: 250px;" fit="contain">
+                                    <div class="absolute-bottom text-subtitle1 text-center">
+                                        <div>{{row.name}}</div>
+                                        <div>{{row.writer}} | {{row.publisher}}</div>
+                                    </div>
+                                </q-img>
+                            </q-carousel-slide>
+                        </template>
+
+                    </q-carousel>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <q-expansion-item class="bg-white shadow-2" v-model="expanded" label="상세 검색">
                     <q-card>
                         <q-card-section>
-                            <div class="q-pa-md">
+                            <div>
                                 <div class="q-gutter-sm">
+                                    <q-radio v-model="search_type" val="none" label="선택안함"></q-radio>
                                     <q-radio v-model="search_type" val="name" label="도서명"></q-radio>
                                     <q-radio v-model="search_type" val="writer" label="저자"></q-radio>
                                     <q-radio v-model="search_type" val="category" label="도서분류"></q-radio>
@@ -29,6 +57,7 @@
                 </q-expansion-item>
             </td>
         </tr>
+
         <tr>
             <td style="width: 100%;">
                 <q-card >
@@ -87,9 +116,12 @@
      const app = Vue.createApp({
         data: function() {
             return {
+                slide: 1,
+                autoplay: true,
                 expanded: false,
-                search_type: 'name',
+                search_type: 'none',
 
+                best_list: [],
                 book_list: [],
                 book_columns: [
                     { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
@@ -105,6 +137,8 @@
         methods: {
             load_book_list: function() {
                 var vm = this;
+                vm.best_list = [];
+                vm.book_list = [];
                 vm.$q.loading.show();
                 axios.get('/api/book', {
                     params: {
@@ -114,6 +148,12 @@
                     var data = res.data;
                     if(data.success == 1) {
                         var row = data.bookList;
+                        for(var i=0; i<row.length; i++) {
+                            row[i]["index"] = i+1;
+                            if(row[i].isBest == 1) {
+                                vm.best_list.push(row[i]);
+                            }
+                        }
                         vm.book_list = row;
                     } else {
                         vm.$q.notify({

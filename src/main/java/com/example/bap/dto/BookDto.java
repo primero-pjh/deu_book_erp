@@ -10,6 +10,7 @@ public class BookDto {
     private String image;
     private String location;
     private int status;
+    private int isBest;
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
@@ -69,4 +70,7 @@ public class BookDto {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    public int getIsBest() {return isBest;}
+    public void setIsBest(int isBest) {this.isBest = isBest;}
 }

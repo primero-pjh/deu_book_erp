@@ -10,4 +10,5 @@ import java.util.List;
 public interface BookMapper {
     public BookDto BookReadOne(int bookId);
     public List<BookDto> BookReadAll();
+    public void UpdateBook(BookDto bookDto);
 }
