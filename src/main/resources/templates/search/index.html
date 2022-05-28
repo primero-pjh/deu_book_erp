@@ -10,11 +10,12 @@
 <script src="static/js/qrcodejs/qrcode.min.js"></script>
 <div id="app">
     <top_menu ref="top_menu"></top_menu>
-    <table style="width: 100%; margin-top: 74px;">
+    <table style="position: relative; width: 1000px;
+        left: 50%; transform: translate(-50%, 0);
+        margin-top: 74px;">
         <tr>
             <td>
-
-                <div>
+                <div class="shadow-2">
                     <div class="bg-white text-center" style="width: 100%;">
                         <p class="text-h5" style="margin-bottom: 0;">베스트 셀러</p>
                     </div>
@@ -72,12 +73,18 @@
                     <q-card-section class="q-pa-md">
                         <q-table ref="book_list"
                                  class="my-sticky-header-table"
-                                 style="height: 600px" :filter="filter"
+                                 :filter="filter"
                                  :rows="book_list" :columns="book_columns" virtual-scroll
                                  :rows-per-page-options="[0]" separator="vertical"
                                  no-data-label="데이터가 없습니다.">
                             <template v-slot:body="props">
                                 <q-tr :props="props">
+                                    <q-td auto-width>
+                                        <q-btn size="sm" round dense flat
+                                               @click="props.row.expand = !props.row.expand" :icon="props.row.expand ? 'expand_less' : 'expand_more'" >
+
+                                        </q-btn>
+                                    </q-td>
                                     <q-td>{{props.row.bookId}}</q-td>
                                     <q-td>{{props.row.name}}</q-td>
                                     <q-td>{{props.row.category}}</q-td>
@@ -98,6 +105,18 @@
                                     </q-td>
 
                                 </q-tr>
+                                <q-tr v-show="props.row.expand" :props="props">
+                                    <q-td colspan="100%" style="border-top: 1px solid #e3e3e3; border-bottom: 1px solid #e3e3e3;">
+                                        <div class="row">
+                                            <div class="col">
+                                                <q-img :src="props.row.image" style="border: 1px solid black; width: 250px;"></q-img>
+                                            </div>
+                                            <div class="col" style="max-width: 300px">
+                                                <q-input v-model="props.row.description" filled type="textarea"/>
+                                            </div>
+                                        </div>
+                                    </q-td>
+                                </q-tr>
                             </template>
                         </q-table>
                     </q-card-section>
@@ -105,6 +124,7 @@
             </td>
         </tr>
     </table>
+    <q_footer></q_footer>
 </div>
 </body>
 </html>
@@ -124,6 +144,7 @@
                 best_list: [],
                 book_list: [],
                 book_columns: [
+                    { name: '', label: '', field: '', align: 'left', headerStyle: 'width: 30px;'},
                     { name: 'index', label: '번호', field: 'index', align: 'left', sortable: true, headerStyle: 'width: 30px;'},
                     { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
                     { name: 'category', label: '카테고리', field: 'category', align: 'left', sortable: true },
@@ -150,6 +171,7 @@
                         var row = data.bookList;
                         for(var i=0; i<row.length; i++) {
                             row[i]["index"] = i+1;
+                            row[i]["expand"] = false;
                             if(row[i].isBest == 1) {
                                 vm.best_list.push(row[i]);
                             }
@@ -175,6 +197,7 @@
 
 </script>
 <head th:include="shared/top_menu.html"></head>
+<head th:include="shared/footer.html"></head>
 <script>
     app.use(Quasar, {
         config: {

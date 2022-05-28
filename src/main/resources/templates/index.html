@@ -10,7 +10,7 @@
 
     <div id="app" style="position: relative">
         <top_menu ref="top_menu"></top_menu>
-        <div style="margin-top: 74px; height: 100%; position: absolute; left: 50%; transform: translate(-50%);" class="q-pa-md">
+        <div style="margin-top: 74px; height: 800px; position: absolute; left: 50%; transform: translate(-50%);" class="q-pa-md">
             <table class="index_table">
                 <tr>
                     <td @click="location_href('/rental')" class="animate__animated">
@@ -50,6 +50,7 @@
                 </tr>
             </table>
         </div>
+        <q_footer style="position: absolute; bottom: 0; width: 100%;"></q_footer>
     </div>
 </body>
 </html>
@@ -90,6 +91,7 @@
     });
 </script>
 <head th:include="shared/top_menu.html"></head>
+<head th:include="shared/footer.html"></head>
 <script>
      app.use(Quasar, {
         config: {
