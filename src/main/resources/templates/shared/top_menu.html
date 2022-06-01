@@ -32,7 +32,7 @@
                     <q-menu>
                         <q-list style="min-width: 100px" class="text-center kf" >
                             <q-item clickable v-close-popup dense style="height: 45px;">
-                                <q-item-section @click="handleLogout">개인정보변경</q-item-section>
+                                <q-item-section @click="location_href('/myPage?type=accountSet')">개인정보변경</q-item-section>
                             </q-item>
                             <q-separator></q-separator>
                             <q-item clickable v-close-popup dense style="height: 45px;">

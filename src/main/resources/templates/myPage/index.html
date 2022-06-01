@@ -107,7 +107,6 @@
             </table>
         </q-card-section>
     </q-card>
-    <q_footer style="position: absolute; bottom: 0; width: 100%;"></q_footer>
 </div>
 </body>
 </html>
@@ -187,7 +186,6 @@
             },
             changePassword: function() {
                 var vm = this;
-                console.log("changePassword:");
                 axios.get("/api/user/change/password", {
                     params: {
                         userId: vm.$refs.top_menu.account.userId,
@@ -197,7 +195,6 @@
                     }
                 }).then(function(res) {
                     var data = res.data;
-                    console.log("data:", data);
                     if(data.success == 0 && data.is_logged == false) {
                         $p.location_href('/');
                     }
@@ -266,6 +263,21 @@
         },
         mounted: function() {
             var vm = this;
+            let params = new URLSearchParams(document.location.search);
+            let type = params.get("type"); // "Jonathan"문자열입니다.
+            if(type) {
+                if(type == 'accountSet') {
+                    var list = vm.menu_list;
+                    for(var i=0; i<list.length; i++) {
+                        if(list[i].type == type) {
+                            list[i].is_selected = true;
+                            vm.type = type;
+                        } else {
+                            list[i].is_selected = false;
+                        }
+                    }
+                }
+            }
             var today = new Date();
             vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
             vm.end_date = $p.formatDate(today);
@@ -275,7 +287,6 @@
     });
 </script>
 <head th:include="shared/top_menu.html"></head>
-<head th:include="shared/footer.html"></head>
 
 <script>
     app.use(Quasar, {
