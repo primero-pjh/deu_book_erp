@@ -13,10 +13,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -91,11 +88,12 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/api/user/login", method = RequestMethod.GET)
-    public @ResponseBody ReturnData Login(HttpServletRequest req) {
+    public @ResponseBody ReturnData Login(@RequestParam(value="userId") String userId, @RequestParam(value="password") String password,
+                                          @RequestParam(value="isRemember") boolean isRemember) {
         ReturnData obj = new ReturnData();
-        String userId = req.getParameter("userId");
-        String password = req.getParameter("password");
-        boolean isRemember = Boolean.parseBoolean(req.getParameter("isRemember"));
+//        String userId = req.getParameter("userId");
+//        String password = req.getParameter("password");
+//        boolean isRemember = Boolean.parseBoolean(req.getParameter("isRemember"));
         var error = new HashMap<String, String>();
         if(StringUtils.isNullOrEmpty(userId)) { error.put("userId", "필수입력 항목입니다."); }
         if(StringUtils.isNullOrEmpty(password)) { error.put("password", "필수입력 항목입니다."); }

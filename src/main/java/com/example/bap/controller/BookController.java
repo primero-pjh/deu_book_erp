@@ -19,79 +19,43 @@ public class BookController {
     @Autowired
     private BookMapper bookMapper;
 
-//    @RequestMapping(value = "api/setting", method = RequestMethod.GET)
-//    public @ResponseBody List<SettingDto> SettingReadAll() {
-//        List<SettingDto> setting_list = settingMapper.SettingReadAll();
-//        return setting_list;
-//    }
-
-    public class BookReadOneData {
-        public int success;
-        public BookDto bookDto;
-
-        public int getSuccess() {
-            return success;
-        }
-        public void setSuccess(int success) {
-            this.success = success;
-        }
-
-        public BookDto getBookDto() {
-            return bookDto;
-        }
-        public void setBookDto(BookDto bookDto) {
-            this.bookDto = bookDto;
-        }
-    }
-
-    public class BookReadAllData {
+    public class ReturnData {
         public int success;
         public List<BookDto> bookList;
+        public BookDto bookDTO;
         public String message;
 
-        public int getSuccess() {
-            return success;
-        }
+        public int getSuccess() { return success; }
+        public void setSuccess(int success) { this.success = success; }
 
-        public void setSuccess(int success) {
-            this.success = success;
-        }
+        public List<BookDto> getBookList() { return bookList; }
+        public void setBookList(List<BookDto> bookList) { this.bookList = bookList; }
 
-        public List<BookDto> getBookList() {
-            return bookList;
-        }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
 
-        public void setBookList(List<BookDto> bookList) {
-            this.bookList = bookList;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+        public BookDto getBookDTO() {return bookDTO;}
+        public void setBookDTO(BookDto bookDTO) {this.bookDTO = bookDTO;}
     }
 
     @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
-    public @ResponseBody BookReadOneData BookReadOne(@PathVariable int bookId) {
+    public @ResponseBody ReturnData BookReadOne(@PathVariable int bookId) {
         BookDto book = bookMapper.BookReadOne(bookId);
-        var obj = new BookReadOneData();
+        var obj = new ReturnData();
 
         if(book == null) {
             obj.setSuccess(0);
             return obj;
         }
         obj.setSuccess(1);
-        obj.setBookDto(book);
+        obj.setBookDTO(book);
         return obj;
     }
 
     @RequestMapping(value = "api/book", method = RequestMethod.GET)
-    public @ResponseBody BookReadAllData BookReadAll() {
+    public @ResponseBody ReturnData BookReadAll() {
         List<BookDto> bookList = bookMapper.BookReadAll();
-        var obj = new BookReadAllData();
+        var obj = new ReturnData();
 
         if(bookList == null) {
             obj.setSuccess(0);

@@ -64,9 +64,11 @@
                 <q-card >
                     <q-card-section class="q-pa-md">
                         <div style="display: flex; width: 100%;">
-                            <q-input outlined dense placeholder="Search" class="q-mr-sm" style="width: 100%;"></q-input>
+                            <q-input outlined dense placeholder="검색할 값을 입력하세요." v-model="searchTitle"
+                                     class="q-mr-sm" style="width: 100%;" @keyup.enter="filter_book_list">
+                            </q-input>
                             <q-space></q-space>
-                            <q-btn dense flat icon="search"></q-btn>
+                            <q-btn dense flat icon="search" @click="filter_book_list"></q-btn>
                         </div>
                     </q-card-section>
                     <q-separator></q-separator>
@@ -82,7 +84,6 @@
                                     <q-td auto-width>
                                         <q-btn size="sm" round dense flat
                                                @click="props.row.expand = !props.row.expand" :icon="props.row.expand ? 'expand_less' : 'expand_more'" >
-
                                         </q-btn>
                                     </q-td>
                                     <q-td>{{props.row.bookId}}</q-td>
@@ -140,6 +141,8 @@
                 expanded: false,
                 search_type: 'none',
 
+                searchTitle: '',
+
                 best_list: [],
                 book_list: [],
                 book_columns: [
@@ -155,6 +158,19 @@
             }
         },
         methods: {
+            filter_book_list: function() {
+                var vm = this;
+                console.log("vm.search_type:", vm.search_type);
+                console.log("vm.searchTitle:", vm.searchTitle);
+                axios.get('/api/search', {
+                    params: {
+                        type: vm.search_type,
+                        value: vm.searchTitle,
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                });
+            },
             load_book_list: function() {
                 var vm = this;
                 vm.best_list = [];
