@@ -10,4 +10,17 @@
     <update id="UpdateBook" parameterType="com.example.bap.dto.BookDto">
         update books set status=#{status} where bookId=#{bookId}
     </update>
+
+    <select id="BookSearch_n" resultType="com.example.bap.dto.BookDto" parameterType="String">
+        select * from books where name like CONCAT('%', #{name}, '%')
+    </select>
+    <select id="BookSearch_c" resultType="com.example.bap.dto.BookDto" parameterType="String">
+        select * from books where category=#{category}
+    </select>
+    <select id="BookSearch_d" resultType="com.example.bap.dto.BookDto" parameterType="String">
+        select * from books where description=#{description}
+    </select>
+    <select id="BookSearch_w" resultType="com.example.bap.dto.BookDto" parameterType="String">
+        select * from books where writer=#{writer}
+    </select>
 </mapper>

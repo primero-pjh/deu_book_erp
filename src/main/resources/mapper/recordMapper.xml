@@ -12,8 +12,10 @@
         select * from records where accountId=#{accountId} and bookId=#{bookId} and (returnDate is null or returnDate = '')
     </select>
 
-    <select id="MyRecordList" resultType="com.example.bap.dto.RecordDto" parameterType="int">
-        select * from records where accountId=#{accountId}
+    <select id="MyRecordList" resultType="map" parameterType="int">
+        select *
+        from records, books
+        where accountId=#{accountId} and records.bookId = books.bookId
     </select>
     <select id="MyRecordWithBookIdCount" resultType="int" parameterType="int">
         select count(*) from records where accountId=#{accountId} and bookId=#{bookId} and
@@ -24,6 +26,23 @@
     </select>
     <select id="MyOverDueList" resultType="com.example.bap.dto.RecordDto" parameterType="int">
         select * from records where accountId=#{accountId} and overDue=1
+    </select>
+    <select id="MyFilterRecordList" resultType="map" parameterType="map">
+        select *
+        from records, books
+        where accountId=#{accountId} and records.bookId = books.bookId and
+        <if test='type == "rentalDate"'>
+            <![CDATA[
+            rentalDate >=#{startDate} and
+            rentalDate <=#{endDate}
+        ]]>
+        </if>
+        <if test='type == "returnDate"'>
+            <![CDATA[
+            returnDate >=#{startDate} and
+            returnDate <=#{endDate}
+        ]]>
+        </if>
     </select>
 
     <update id="Return" parameterType="com.example.bap.dto.RecordDto">

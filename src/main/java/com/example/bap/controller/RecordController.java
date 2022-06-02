@@ -7,18 +7,12 @@ import com.example.bap.dto.BookDto;
 import com.example.bap.dto.RecordDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,9 +22,9 @@ public class RecordController {
     @Autowired
     private RecordMapper recordMapper;
 
-    public class RecordReadAllData {
+    public class ReturnData {
         public int success;
-        public List<RecordDto> recordList;
+        public List<Map<String, Object>> recordList;
         public int state;
         public String message;
 
@@ -42,11 +36,11 @@ public class RecordController {
             this.success = success;
         }
 
-        public List<RecordDto> getRecordList() {
+        public List<Map<String, Object>> getRecordList() {
             return recordList;
         }
 
-        public void setRecordList(List<RecordDto> recordList) {
+        public void setRecordList(List<Map<String, Object>> recordList) {
             this.recordList = recordList;
         }
 
@@ -67,20 +61,50 @@ public class RecordController {
         }
     }
 
-    @RequestMapping(value = "api/record/{accountId}", method = RequestMethod.GET)
-    public @ResponseBody
-    RecordReadAllData BookReadOne(@PathVariable int accountId) {
-        var obj = new RecordReadAllData();
-        if (accountId == 0) {
+//    @RequestMapping(value = "api/record/{accountId}", method = RequestMethod.GET)
+//    public @ResponseBody
+//    RecordReadAllData BookReadOne(@PathVariable int accountId) {
+//        var obj = new RecordReadAllData();
+//        if (accountId == 0) {
+//            obj.setSuccess(0);
+//            obj.setMessage("로그인 후 다시 이용해주세요.");
+//            return obj;
+//        }
+//
+//        var record_list = recordMapper.MyRecordList(accountId);
+//        obj.setSuccess(1);
+//        obj.setRecordList(record_list);
+//        obj.setMessage("성공적으로 대여하였습니다.");
+//        return obj;
+//    }
+
+    @RequestMapping(value = "api/myRecord/{accountId}", method = RequestMethod.GET)
+    public @ResponseBody ReturnData getMyRecordList(@PathVariable int accountId) {
+        List<Map<String, Object>> my_record_list = recordMapper.MyRecordList(accountId);
+        var obj = new ReturnData();
+
+        obj.setSuccess(1);
+        obj.setRecordList(my_record_list);
+        return obj;
+
+    }
+
+    @RequestMapping(value = "api/filterMyRecord/{accountId}", method = RequestMethod.GET)
+    public @ResponseBody ReturnData getFilterMyRecordList(@PathVariable int accountId,
+                                                     @RequestParam(value="startDate") String startDate,
+                                                     @RequestParam(value="endDate") String endDate,
+                                                     @RequestParam(value="type") String type) {
+
+        List<Map<String, Object>> filter_my_record_list = recordMapper.MyFilterRecordList(accountId, startDate, endDate, type);
+        var obj = new ReturnData();
+
+        if(filter_my_record_list.size() == 0) {
             obj.setSuccess(0);
-            obj.setMessage("로그인 후 다시 이용해주세요.");
             return obj;
         }
-
-        var record_list = recordMapper.MyRecordList(accountId);
         obj.setSuccess(1);
-        obj.setRecordList(record_list);
-        obj.setMessage("성공적으로 대여하였습니다.");
+        obj.setRecordList(filter_my_record_list);
         return obj;
+
     }
 }

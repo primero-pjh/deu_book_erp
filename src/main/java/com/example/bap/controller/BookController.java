@@ -4,10 +4,7 @@ import com.example.bap.dao.BookMapper;
 import com.example.bap.dto.BookDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -19,79 +16,29 @@ public class BookController {
     @Autowired
     private BookMapper bookMapper;
 
-//    @RequestMapping(value = "api/setting", method = RequestMethod.GET)
-//    public @ResponseBody List<SettingDto> SettingReadAll() {
-//        List<SettingDto> setting_list = settingMapper.SettingReadAll();
-//        return setting_list;
-//    }
-
-    public class BookReadOneData {
-        public int success;
-        public BookDto bookDto;
-
-        public int getSuccess() {
-            return success;
-        }
-        public void setSuccess(int success) {
-            this.success = success;
-        }
-
-        public BookDto getBookDto() {
-            return bookDto;
-        }
-        public void setBookDto(BookDto bookDto) {
-            this.bookDto = bookDto;
-        }
-    }
-
-    public class BookReadAllData {
+    public class ReturnData {
         public int success;
         public List<BookDto> bookList;
+        public BookDto bookDTO;
         public String message;
 
-        public int getSuccess() {
-            return success;
-        }
+        public int getSuccess() { return success; }
+        public void setSuccess(int success) { this.success = success; }
 
-        public void setSuccess(int success) {
-            this.success = success;
-        }
+        public List<BookDto> getBookList() { return bookList; }
+        public void setBookList(List<BookDto> bookList) { this.bookList = bookList; }
 
-        public List<BookDto> getBookList() {
-            return bookList;
-        }
+        public String getMessage() { return message; }
+        public void setMessage(String message) { this.message = message; }
 
-        public void setBookList(List<BookDto> bookList) {
-            this.bookList = bookList;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
-
-    @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
-    public @ResponseBody BookReadOneData BookReadOne(@PathVariable int bookId) {
-        BookDto book = bookMapper.BookReadOne(bookId);
-        var obj = new BookReadOneData();
-
-        if(book == null) {
-            obj.setSuccess(0);
-            return obj;
-        }
-        obj.setSuccess(1);
-        obj.setBookDto(book);
-        return obj;
+        public BookDto getBookDTO() {return bookDTO;}
+        public void setBookDTO(BookDto bookDTO) {this.bookDTO = bookDTO;}
     }
 
     @RequestMapping(value = "api/book", method = RequestMethod.GET)
-    public @ResponseBody BookReadAllData BookReadAll() {
+    public @ResponseBody ReturnData BookReadAll() {
         List<BookDto> bookList = bookMapper.BookReadAll();
-        var obj = new BookReadAllData();
+        var obj = new ReturnData();
 
         if(bookList == null) {
             obj.setSuccess(0);
@@ -102,5 +49,32 @@ public class BookController {
         return obj;
     }
 
+    @RequestMapping(value = "api/search", method = RequestMethod.GET)
+    public @ResponseBody ReturnData getFilterBookList(@RequestParam(value="type") String type,
+                                                      @RequestParam(value="value") String value) {
+        ReturnData obj = new ReturnData();
+        System.out.println(type);
+        System.out.println(value);
+        List<BookDto> book_list = null;
+        if(type.equals("none")) {
+            obj.setSuccess(0);
+            return obj;
+        }
+        if(type.equals("name")){
+            System.out.println("?");
+            book_list = bookMapper.BookSearch_n(value);
 
+        } else if(type=="category"){
+            book_list = bookMapper.BookSearch_c(value);
+
+        } else if(type=="writer"){
+            book_list = bookMapper.BookSearch_w(value);
+
+        } else if(type=="description"){
+            book_list = bookMapper.BookSearch_d(value);
+        }
+        obj.setSuccess(1);
+        obj.setBookList(book_list);
+        return obj;
+    }
 }

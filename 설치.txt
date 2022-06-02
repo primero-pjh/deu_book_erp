@@ -44,3 +44,12 @@ controller 정의>
 	1. 대여한 책이 없으면 반납할 수 없다.
 	2. 반납예정일이 지났을 때		=> 연체기록남김
 	3. 반납예정일이 지나지 않았을 때	=> 연체기록안남김
+
+
+# git ignore 사용법
+ref : https://novemberfirst.tistory.com/91
+
+ignore 파일이 안막히면
+git rm -r --cached .
+git add .
+git commit -m "ignore 재조정"

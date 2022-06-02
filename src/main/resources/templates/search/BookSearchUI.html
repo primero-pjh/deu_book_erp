@@ -46,7 +46,8 @@
                         <q-card-section>
                             <div>
                                 <div class="q-gutter-sm">
-                                    <q-radio v-model="search_type" val="none" label="선택안함"></q-radio>
+                                    <q-radio v-model="search_type" val="none" label="선택안함"
+                                            @update:v-model="change_type"></q-radio>
                                     <q-radio v-model="search_type" val="name" label="도서명"></q-radio>
                                     <q-radio v-model="search_type" val="writer" label="저자"></q-radio>
                                     <q-radio v-model="search_type" val="category" label="도서분류"></q-radio>
@@ -64,9 +65,11 @@
                 <q-card >
                     <q-card-section class="q-pa-md">
                         <div style="display: flex; width: 100%;">
-                            <q-input outlined dense placeholder="Search" class="q-mr-sm" style="width: 100%;"></q-input>
+                            <q-input outlined dense placeholder="검색할 값을 입력하세요." v-model="searchTitle"
+                                     class="q-mr-sm" style="width: 100%;" @keyup.enter="filter_book_list">
+                            </q-input>
                             <q-space></q-space>
-                            <q-btn dense flat icon="search"></q-btn>
+                            <q-btn dense flat icon="search" @click="filter_book_list"></q-btn>
                         </div>
                     </q-card-section>
                     <q-separator></q-separator>
@@ -82,7 +85,6 @@
                                     <q-td auto-width>
                                         <q-btn size="sm" round dense flat
                                                @click="props.row.expand = !props.row.expand" :icon="props.row.expand ? 'expand_less' : 'expand_more'" >
-
                                         </q-btn>
                                     </q-td>
                                     <q-td>{{props.row.bookId}}</q-td>
@@ -140,6 +142,8 @@
                 expanded: false,
                 search_type: 'none',
 
+                searchTitle: '',
+
                 best_list: [],
                 book_list: [],
                 book_columns: [
@@ -155,6 +159,23 @@
             }
         },
         methods: {
+            filter_book_list: function() {
+                var vm = this;
+                axios.get('/api/search', {
+                    params: {
+                        type: vm.search_type,
+                        value: vm.searchTitle,
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success) {
+                        vm.book_list = data.bookList;
+                    } else {
+                        vm.load_book_list();
+                    }
+
+                });
+            },
             load_book_list: function() {
                 var vm = this;
                 vm.best_list = [];

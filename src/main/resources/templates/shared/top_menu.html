@@ -109,6 +109,11 @@
                         if(vm.$root._.data.hasOwnProperty('account')) {
                             vm.$root._.data.account = vm.account;
                         }
+                        if(typeof vm.$root.load_filter_record_list === 'function') {
+                            vm.$root.load_filter_record_list();
+                        }
+
+
                         vm.$q.loading.hide();
                     }
                 });
@@ -118,6 +123,10 @@
             var vm = this;
             vm.tab = window.location.pathname;
             vm.getUser();
-        }
+
+        },
+        created: function() {
+            var vm = this;
+        },
     });
 </script>

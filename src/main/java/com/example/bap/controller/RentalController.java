@@ -66,6 +66,20 @@ public class RentalController {
         }
     }
 
+    @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
+    public @ResponseBody ReturnData BookReadOne(@PathVariable int bookId) {
+        BookDto book = bookMapper.BookReadOne(bookId);
+        var obj = new ReturnData();
+
+        if(book == null) {
+            obj.setSuccess(0);
+            return obj;
+        }
+        obj.setSuccess(1);
+        obj.setBookDto(book);
+        return obj;
+    }
+
     @RequestMapping(value = "api/rental/{bookId}", method = RequestMethod.POST)
     public @ResponseBody ReturnData Rental(@PathVariable int bookId,
                                                      HttpServletRequest httpServletRequest) {

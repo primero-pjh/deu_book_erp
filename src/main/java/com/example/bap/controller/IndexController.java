@@ -12,27 +12,23 @@ import java.util.List;
 @Controller
 public class IndexController {
     @Autowired
-    @RequestMapping(value = "/setting", method = RequestMethod.GET)
-    public String renderSettingPage() { return "setting/index"; }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String renderMainPage() { return "MainUI"; }
 
     @RequestMapping(value = "/rental", method = RequestMethod.GET)
     public String renderRentalPage() {
-        return "rental/index";
+        return "rental/RentalUI";
     }
 
     @RequestMapping(value = "/return", method = RequestMethod.GET)
     public String renderReturnPage() {
-        return "return/index";
-    }
-
-    @RequestMapping(value = "/qrMaker", method = RequestMethod.GET)
-    public String renderQRMakerPage() {
-        return "qrMaker/index";
+        return "return/ReturnUI";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String renderLoginPage() {
-        return "login/login";
+        return "login/LoginUI";
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -42,21 +38,11 @@ public class IndexController {
 
     @RequestMapping(value = "/myPage", method = RequestMethod.GET)
     public String rendermyPage() {
-        return "myPage/index";
-    }
-
-    @RequestMapping(value = "/bookManage", method = RequestMethod.GET)
-    public String renderbookManagePage() {
-        return "bookManage/index";
-    }
-
-    @RequestMapping(value = "/overDueManage", method = RequestMethod.GET)
-    public String renderoverDueManagePage() {
-        return "overDueManage/index";
+        return "myPage/myPageUI";
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String rendersearchPage() {
-        return "search/index";
+        return "search/BookSearchUI";
     }
 }

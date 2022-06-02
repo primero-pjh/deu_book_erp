@@ -25,12 +25,13 @@
                         </q-list>
                     </td>
                     <td class="q-pl-md">
-                        <div style="width: 100%; display: flex;" v-if="type == 'recordList'"    >
-                            <q-input filled dense v-model="start_date" mask="date" :rules="['date']" style="width: 200px;">
+                        <div style="width: 100%; display: flex;" v-if="type == 'recordList'">
+                            <q-input filled dense v-model="start_date" style="width: 200px;">
                                 <template v-slot:append>
                                     <q-icon name="event" class="cursor-pointer">
                                         <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                                            <q-date v-model="start_date">
+                                            <q-date v-model="start_date" @update:model-value="changeDate"
+                                                    mask="YYYY-MM-DD">
                                                 <div class="row items-center justify-end">
                                                     <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
                                                 </div>
@@ -40,11 +41,12 @@
                                 </template>
                             </q-input>
                             ~
-                            <q-input filled dense v-model="end_date" mask="date" :rules="['date']" style="width: 200px;">
+                            <q-input filled dense v-model="end_date" style="width: 200px;">
                                 <template v-slot:append>
                                     <q-icon name="event" class="cursor-pointer">
                                         <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                                            <q-date v-model="end_date">
+                                            <q-date v-model="end_date" @update:model-value="changeDate"
+                                                    mask="YYYY-MM-DD">
                                                 <div class="row items-center justify-end">
                                                     <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
                                                 </div>
@@ -53,14 +55,33 @@
                                     </q-icon>
                                 </template>
                             </q-input>
+
+                            <q-radio v-model="standard_date" val="rentalDate" label="대여일 기준"
+                                     @update:model-value="changeType"></q-radio>
+                            <q-radio v-model="standard_date" val="returnDate" label="반납일 기준"
+                                     @update:model-value="changeType"></q-radio>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align: top;" class="q-pl-md">
                         <template v-if="type == 'recordList'">
-                            <q-table title="이용내역" :rows="record_list" :columns="record_columns" row-key="name">
-
+                            <q-table ref="record_list"
+                                     class="my-sticky-header-table"
+                                     :filter="filter"
+                                     :rows="record_list" :columns="record_columns" virtual-scroll
+                                     :rows-per-page-options="[0]" separator="vertical"
+                                     no-data-label="데이터가 없습니다.">
+                                <template v-slot:body="props">
+                                    <q-tr :props="props">
+                                        <q-td>{{props.row.recordId}}</q-td>
+                                        <q-td>{{props.row.name}}</q-td>
+                                        <q-td>{{props.row.rentalDate}}</q-td>
+                                        <q-td>{{props.row.returnDate}}</q-td>
+                                        <q-td>{{props.row.returnDueDate}}</q-td>
+                                        <q-td>{{props.row.overDue}}</q-td>
+                                    </q-tr>
+                                </template>
                             </q-table>
                         </template>
                         <q-card class="q-pa-md" v-else-if="type == 'accountSet'">
@@ -126,6 +147,7 @@
                     new_password_confirm: '',
                 },
 
+                standard_date: 'rentalDate',
 
                 start_date: null,
                 end_date: null,
@@ -142,15 +164,27 @@
                 record_list: [],
                 record_columns: [
                     { name: 'recordId', label: '번호', field: 'recordId', align: 'left', sortable: true },
-                    { name: 'recordId', label: '도서명', field: 'recordId', align: 'left', sortable: true },
-                    { name: 'recordId', label: '대여일', field: 'recordId', align: 'left', sortable: true },
-                    { name: 'recordId', label: '반납일', field: 'recordId', align: 'left', sortable: true },
-                    { name: 'recordId', label: '반납예정일', field: 'recordId', align: 'left', sortable: true },
-                    { name: 'recordId', label: '연체유무', field: 'recordId', align: 'left', sortable: true },
+                    { name: 'name', label: '도서명', field: 'name', align: 'left', sortable: true },
+                    { name: 'rentalDate', label: '대여일', field: 'rentalDate', align: 'left', sortable: true },
+                    { name: 'returnDate', label: '반납일', field: 'returnDate', align: 'left', sortable: true },
+                    { name: 'returnDueDate', label: '반납예정일', field: 'returnDueDate', align: 'left', sortable: true },
+                    { name: 'overDue', label: '연체유무', field: 'overDue', align: 'left', sortable: true },
                 ]
             }
         },
         methods: {
+            changeType: function() {
+                var vm = this;
+                vm.$nextTick(()=> {
+                    vm.load_filter_record_list();
+                });
+            },
+            changeDate: function() {
+                var vm = this;
+                vm.$nextTick(()=> {
+                    vm.load_filter_record_list();
+                });
+            },
             checkPassword: function() {
                 var vm = this;
                 axios.get("/api/user/check/password", {
@@ -231,17 +265,18 @@
 
             load_record_list: function() {
                 var vm = this;
-                axios.get('/api/record', {
+                var accountId = vm.$refs.top_menu.account.accountId;
+                axios.get('/api/myRecord/' + accountId, {
                     params: {}
                 }).then(function(res) {
                     var data = res.data;
                     if(data.success == 0 && data.is_logged == false) {
                         $p.location_href('/');
                     }
-
                     if(data.success) {
-                        var row = data.record_list;
+                        var row = data.recordList;
                         vm.record_list = row;
+                        console.log(row);
                     } else {
                         if(data.error) {
                             for(var k in data.error) {
@@ -257,7 +292,43 @@
                             });
                         }
                     }
+                });
+            },
+            load_filter_record_list: function() {
+                var vm = this;
+                var accountId = vm.$refs.top_menu.account.accountId;
+                axios.get('/api/filterMyRecord/' + accountId, {
+                    params: {
+                        startDate: vm.start_date,
+                        endDate: vm.end_date,
+                        type: vm.standard_date,
+                    }
+                }).then(function(res) {
+                    var data = res.data;
+                    if(data.success == 0 && data.is_logged == false) {
+                        $p.location_href('/');
+                    }
+                    console.log(data);
+                    if(data.success) {
+                        var row = data.recordList;
+                        vm.record_list = row;
+                        console.log("row:", row);
+                    } else {
+                        vm.record_list = [];
+                        if(data.error) {
+                            for(var k in data.error) {
+                                vm.form_error[k] = data.error[k];
+                            }
+                        }
+                        if(data.message) {
+                            vm.$q.dialog({
+                                title: '에러',
+                                message: data.message
+                            }).onOk(() => {
 
+                            });
+                        }
+                    }
                 });
             },
         },
@@ -282,7 +353,6 @@
             vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
             vm.end_date = $p.formatDate(today);
 
-            //vm.load_record_list();
         },
     });
 </script>
