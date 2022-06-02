@@ -9,6 +9,6 @@ import java.util.List;
 public interface SettingMapper {
     public List<SettingDto> SettingReadAll();
     public SettingDto SettingReadOne(int settingId);
-    public SettingDto SettingReadOneWithKeyword(String keyword);
+    public SettingDto getSpKeyword(String keyword);
     public void SettingSave(SettingDto settingDto);
 }

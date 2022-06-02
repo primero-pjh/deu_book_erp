@@ -41,6 +41,11 @@ public class IndexController {
         return "myPage/myPageUI";
     }
 
+    @RequestMapping(value = "/setting", method = RequestMethod.GET)
+    public String renderadminPage() {
+        return "setting/AdminPageUI";
+    }
+
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String rendersearchPage() {
         return "search/BookSearchUI";

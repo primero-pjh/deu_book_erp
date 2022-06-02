@@ -79,7 +79,14 @@
                                         <q-td>{{props.row.rentalDate}}</q-td>
                                         <q-td>{{props.row.returnDate}}</q-td>
                                         <q-td>{{props.row.returnDueDate}}</q-td>
-                                        <q-td>{{props.row.overDue}}</q-td>
+                                        <q-td>
+                                            <template v-if="props.row.overDue">
+                                                <q-btn dense round color="positive">O</q-btn>
+                                            </template>
+                                            <template v-else>
+                                                <q-btn dense round color="negative">X</q-btn>
+                                            </template>
+                                        </q-td>
                                     </q-tr>
                                 </template>
                             </q-table>
@@ -88,7 +95,7 @@
                             <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated>
                                 <q-step :name="1" title="비밀번호 입력" icon="edit" :done="step > 1">
                                     <p>현재 비밀번호를 입력하세요.</p>
-                                    <q-input outlined v-model="form.password" dense placeholder="비밀번호"
+                                    <q-input outlined v-model="accountInfo.password" dense placeholder="비밀번호"
                                              @keyup.enter="checkPassword" type="password"
                                              :error="form_error.password.length > 0" :error-message="form_error.password">
                                     </q-input>
@@ -97,13 +104,13 @@
                                 <q-step :name="2" title="새로운 비밀번호 입력" icon="edit" :done="step > 2">
 
                                     <p>새로운 비밀번호를 입력하세요.</p>
-                                    <q-input outlined v-model="form.new_password" dense placeholder="새로운 비밀번호"
-                                             @keyup.enter="changePassword" type="password"
+                                    <q-input outlined v-model="accountInfo.new_password" dense placeholder="새로운 비밀번호"
+                                             @keyup.enter="change_my_info" type="password"
                                              :error="form_error.new_password.length > 0" :error-message="form_error.new_password">
                                     </q-input>
 
-                                    <q-input outlined v-model="form.new_password_confirm" dense placeholder="새로운 비밀번호 재입력"
-                                             @keyup.enter="changePassword" type="password"
+                                    <q-input outlined v-model="accountInfo.new_password_confirm" dense placeholder="새로운 비밀번호 재입력"
+                                             @keyup.enter="change_my_info" type="password"
                                              :error="form_error.new_password_confirm.length > 0" :error-message="form_error.new_password_confirm">
                                     </q-input>
                                 </q-step>
@@ -115,9 +122,9 @@
                                 <template v-slot:navigation>
                                     <q-stepper-navigation>
                                         <q-btn @click="checkPassword" color="primary" v-if="step == 1" label="진행"></q-btn>
-                                        <q-btn @click="changePassword" color="primary" v-else-if="step == 2" label="진행"></q-btn>
-                                        <q-btn @click="$p.location_href('/login')" color="primary" v-else-if="step == 3" label="로그인 페이지로 이동"></q-btn>
-                                        <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="뒤로가기" class="q-ml-sm"></q-btn>
+                                        <q-btn @click="change_my_info" color="primary" v-else-if="step == 2" label="진행"></q-btn>
+                                        <q-btn @click="location_href('/login')" color="primary" v-else-if="step == 3" label="로그인 페이지로 이동"></q-btn>
+                                        <q-btn v-if="step > 1 && step != 3" flat color="primary" @click="$refs.stepper.previous()" label="뒤로가기" class="q-ml-sm"></q-btn>
                                     </q-stepper-navigation>
                                 </template>
                             </q-stepper>
@@ -136,7 +143,7 @@
      const app = Vue.createApp({
         data: function() {
             return {
-                form: {
+                accountInfo: {
                     password: '',
                     new_password: '',
                     new_password_confirm: '',
@@ -173,16 +180,19 @@
             }
         },
         methods: {
+            location_href: function(url) {
+                window.location.href = url;
+            },
             changeType: function() {
                 var vm = this;
                 vm.$nextTick(()=> {
-                    vm.load_filter_record_list();
+                    vm.load_filter_my_record_list();
                 });
             },
             changeDate: function() {
                 var vm = this;
                 vm.$nextTick(()=> {
-                    vm.load_filter_record_list();
+                    vm.load_filter_my_record_list();
                 });
             },
             checkPassword: function() {
@@ -190,7 +200,7 @@
                 axios.get("/api/user/check/password", {
                     params: {
                         userId: vm.$refs.top_menu.account.userId,
-                        password: vm.form.password,
+                        password: vm.accountInfo.password,
                         token: $p.getToken('jwt')
                     }
                 }).then(function(res) {
@@ -201,7 +211,7 @@
                     if(data.success) {
                         vm.$refs.stepper.next();
                     } else {
-                        vm.form.password = "";
+                        vm.accountInfo.password = "";
                         if(data.error) {
                             for(var k in data.error) {
                                 vm.form_error[k] = data.error[k];
@@ -218,13 +228,13 @@
                     }
                 });
             },
-            changePassword: function() {
+            change_my_info: function() {
                 var vm = this;
                 axios.get("/api/user/change/password", {
                     params: {
                         userId: vm.$refs.top_menu.account.userId,
-                        new_password: vm.form.new_password,
-                        new_password_confirm: vm.form.new_password_confirm,
+                        new_password: vm.accountInfo.new_password,
+                        new_password_confirm: vm.accountInfo.new_password_confirm,
                         token: $p.getToken('jwt')
                     }
                 }).then(function(res) {
@@ -236,8 +246,8 @@
                         vm.$refs.stepper.next();
                         $p.deleteToken('jwt');
                     } else {
-                        vm.form.new_password = "";
-                        vm.form.new_password_confirm = "";
+                        vm.accountInfo.new_password = "";
+                        vm.accountInfo.new_password_confirm = "";
                         if(data.error) {
                             for(var k in data.error) {
                                 vm.form_error[k] = data.error[k];
@@ -263,38 +273,7 @@
                 vm.type = row.type;
             },
 
-            load_record_list: function() {
-                var vm = this;
-                var accountId = vm.$refs.top_menu.account.accountId;
-                axios.get('/api/myRecord/' + accountId, {
-                    params: {}
-                }).then(function(res) {
-                    var data = res.data;
-                    if(data.success == 0 && data.is_logged == false) {
-                        $p.location_href('/');
-                    }
-                    if(data.success) {
-                        var row = data.recordList;
-                        vm.record_list = row;
-                        console.log(row);
-                    } else {
-                        if(data.error) {
-                            for(var k in data.error) {
-                                vm.form_error[k] = data.error[k];
-                            }
-                        }
-                        if(data.message) {
-                            vm.$q.dialog({
-                                title: '에러',
-                                message: data.message
-                            }).onOk(() => {
-
-                            });
-                        }
-                    }
-                });
-            },
-            load_filter_record_list: function() {
+            load_filter_my_record_list: function() {
                 var vm = this;
                 var accountId = vm.$refs.top_menu.account.accountId;
                 axios.get('/api/filterMyRecord/' + accountId, {
@@ -308,11 +287,9 @@
                     if(data.success == 0 && data.is_logged == false) {
                         $p.location_href('/');
                     }
-                    console.log(data);
                     if(data.success) {
                         var row = data.recordList;
                         vm.record_list = row;
-                        console.log("row:", row);
                     } else {
                         vm.record_list = [];
                         if(data.error) {
@@ -335,7 +312,7 @@
         mounted: function() {
             var vm = this;
             let params = new URLSearchParams(document.location.search);
-            let type = params.get("type"); // "Jonathan"문자열입니다.
+            let type = params.get("type");
             if(type) {
                 if(type == 'accountSet') {
                     var list = vm.menu_list;
@@ -352,7 +329,6 @@
             var today = new Date();
             vm.start_date = $p.formatDate(new Date(today.getFullYear(), today.getMonth()-1, today.getDate()));
             vm.end_date = $p.formatDate(today);
-
         },
     });
 </script>

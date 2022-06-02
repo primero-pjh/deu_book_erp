@@ -39,16 +39,16 @@
         <div v-else>
             <q-card class="my-card" style="width: 400px;">
                 <q-card-section>
-                    <q-img :src="form.image">
+                    <q-img :src="bookInfo.image">
                         <div class="absolute-bottom text-subtitle1 text-center">
                             <div>
-                                도서명: {{form.name}}
+                                도서명: {{bookInfo.name}}
                             </div>
                             <div>
-                                저자: {{form.writer}}
+                                저자: {{bookInfo.writer}}
                             </div>
                             <div>
-                                출판사: {{form.publisher}}
+                                출판사: {{bookInfo.publisher}}
                             </div>
                             <div>
                                 반납예정일: {{returnDueDateView}}
@@ -58,8 +58,9 @@
                 </q-card-section>
             </q-card>
             <div style="text-align: center;" class="q-mt-sm">
-                <q-btn color="primary" @click="" class="q-mr-sm" v-if="!form.status">대여불가능</q-btn>
-                <q-btn color="primary" @click="handleRental" class="q-mr-sm" v-if="is_rental==false">대여</q-btn>
+                <q-btn color="primary" class="q-mr-sm" v-if="!bookInfo.status">대여불가능</q-btn>
+                <q-btn color="primary" @click="handleRental" class="q-mr-sm" :disable="!bookInfo.status"
+                       v-if="is_rental==false">대여</q-btn>
                 <q-btn color="primary" @click="location_href('')" class="q-mr-sm" v-else>홈화면으로 이동</q-btn>
                 <q-btn @click="reload">다른 책 대여</q-btn>
             </div>
@@ -78,7 +79,7 @@
                     is_check: false,
                     is_rental: false,
                     is_error: false,
-                    form: new Object(),
+                    bookInfo: new Object(),
                     returnDueDateView: null,
                 }
             },
@@ -90,11 +91,44 @@
                     window.location.href = '/' + url;
                 },
 
+                load_book: function(bookId) {
+                    var vm = this;
+                    axios.get('/api/book/' + bookId, {
+                        params: {
+
+                        }
+                    }).then(function(res) {
+                        if(res.data.success) {
+                            vm.is_check = true;
+                            for(var k in res.data.bookDto) {
+                                vm.bookInfo[k] = res.data.bookDto[k];
+                            }
+                            var today = new Date();
+                            vm.returnDueDateView = $p.formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7));
+
+                            vm.$q.notify({
+                                type: 'positive',
+                                message: "책 조회 완료",
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                        } else {
+                            vm.$q.notify({
+                                type: 'positive',
+                                message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                        }
+
+                    });
+                },
+
                 handleRental: function() {
                     var vm = this;
                     var form_data = new FormData();
                     form_data.append("accountId", vm.$refs.top_menu.account.accountId);
-                    axios.post('/api/rental/' + vm.form.bookId, form_data).then(function(res) {
+                    axios.post('/api/rental/' + vm.bookInfo.bookId, form_data).then(function(res) {
                         if(res.data.success == 1) {
                             vm.$q.notify({
                                 type: 'positive',
@@ -104,19 +138,7 @@
                             });
                             vm.is_rental = true;
                         } else {
-
-                            if(res.data.state == 100) {
-                                // 이미 대여한 책이라면,
-                                vm.$q.dialog({
-                                    title: '확인',
-                                    message: '이미 대여한 책입니다. 반납하시겠어요?',
-                                    cancel: true,
-                                    persistent: false,
-                                }).onOk(() => {
-                                    window.location.href = '/return';
-                                });
-                                return;
-                            } else if(res.data.state == 200) {
+                            if(res.data.state == 200) {
                                 // 연체 후 7일이 경과되지 않았다면,
                             } else if(res.data.state == 300) {
                                 // 3권 이상을 대여 중인 회원이라면
@@ -182,7 +204,6 @@
                             outputMessage.hidden = true;
                             outputData.parentElement.hidden = false;
                             outputData.innerText = code.data;
-                            console.log("outputData:", code.data);
                             var json_data = JSON.parse(outputData.innerText);
 
                             if(json_data.hasOwnProperty('bookId') == false || json_data.bookId == 0) {
@@ -196,37 +217,7 @@
                                 return;
                             }
                             if (json_data) {
-                                console.log("json_data:", json_data);
-                                axios.get('/api/book/' + json_data.bookId, {
-                                    params: {
-
-                                    }
-                                }).then(function(res) {
-                                    console.log(res.data);
-                                    if(res.data.success) {
-                                        vm.is_check = true;
-                                        for(var k in res.data.bookDTO) {
-                                            vm.form[k] = res.data.bookDTO[k];
-                                        }
-                                        var today = new Date();
-
-                                        vm.returnDueDateView = $p.formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7));
-                                        vm.$q.notify({
-                                            type: 'positive',
-                                            message: "책 조회 완료",
-                                            position: 'bottom',
-                                            timeout: 1000,
-                                        });
-                                    } else {
-                                        vm.$q.notify({
-                                            type: 'positive',
-                                            message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
-                                            position: 'bottom',
-                                            timeout: 1000,
-                                        });
-                                    }
-
-                                });
+                                vm.load_book(json_data.bookId);
                             }
                             return;
                         } else {

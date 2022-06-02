@@ -61,32 +61,14 @@ public class RecordController {
         }
     }
 
-//    @RequestMapping(value = "api/record/{accountId}", method = RequestMethod.GET)
-//    public @ResponseBody
-//    RecordReadAllData BookReadOne(@PathVariable int accountId) {
-//        var obj = new RecordReadAllData();
-//        if (accountId == 0) {
-//            obj.setSuccess(0);
-//            obj.setMessage("로그인 후 다시 이용해주세요.");
-//            return obj;
-//        }
-//
-//        var record_list = recordMapper.MyRecordList(accountId);
-//        obj.setSuccess(1);
-//        obj.setRecordList(record_list);
-//        obj.setMessage("성공적으로 대여하였습니다.");
-//        return obj;
-//    }
-
     @RequestMapping(value = "api/myRecord/{accountId}", method = RequestMethod.GET)
     public @ResponseBody ReturnData getMyRecordList(@PathVariable int accountId) {
-        List<Map<String, Object>> my_record_list = recordMapper.MyRecordList(accountId);
         var obj = new ReturnData();
+        List<Map<String, Object>> my_record_list = recordMapper.MyRecordList(accountId);
 
         obj.setSuccess(1);
         obj.setRecordList(my_record_list);
         return obj;
-
     }
 
     @RequestMapping(value = "api/filterMyRecord/{accountId}", method = RequestMethod.GET)
@@ -94,9 +76,8 @@ public class RecordController {
                                                      @RequestParam(value="startDate") String startDate,
                                                      @RequestParam(value="endDate") String endDate,
                                                      @RequestParam(value="type") String type) {
-
-        List<Map<String, Object>> filter_my_record_list = recordMapper.MyFilterRecordList(accountId, startDate, endDate, type);
         var obj = new ReturnData();
+        List<Map<String, Object>> filter_my_record_list = recordMapper.MyFilterRecordList(accountId, startDate, endDate, type);
 
         if(filter_my_record_list.size() == 0) {
             obj.setSuccess(0);
@@ -105,6 +86,5 @@ public class RecordController {
         obj.setSuccess(1);
         obj.setRecordList(filter_my_record_list);
         return obj;
-
     }
 }

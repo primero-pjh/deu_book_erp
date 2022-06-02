@@ -19,7 +19,7 @@ public class BookController {
     public class ReturnData {
         public int success;
         public List<BookDto> bookList;
-        public BookDto bookDTO;
+        public BookDto bookDto;
         public String message;
 
         public int getSuccess() { return success; }
@@ -31,8 +31,22 @@ public class BookController {
         public String getMessage() { return message; }
         public void setMessage(String message) { this.message = message; }
 
-        public BookDto getBookDTO() {return bookDTO;}
-        public void setBookDTO(BookDto bookDTO) {this.bookDTO = bookDTO;}
+        public BookDto getBookDto() {return bookDto;}
+        public void setBookDto(BookDto bookDto) {this.bookDto = bookDto;}
+    }
+
+    @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
+    public @ResponseBody ReturnData getSpBook(@PathVariable int bookId) {
+        var obj = new ReturnData();
+        BookDto book = bookMapper.getSpBook(bookId);
+
+        if(book == null) {
+            obj.setSuccess(0);
+            return obj;
+        }
+        obj.setSuccess(1);
+        obj.setBookDto(book);
+        return obj;
     }
 
     @RequestMapping(value = "api/book", method = RequestMethod.GET)

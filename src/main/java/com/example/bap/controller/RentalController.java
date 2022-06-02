@@ -39,6 +39,7 @@ public class RentalController {
     public class ReturnData {
         public int success;
         public BookDto bookDto;
+        public RecordDto recordDto;
         public int state;
         public String message;
 
@@ -60,30 +61,20 @@ public class RentalController {
         public int getState() {
             return state;
         }
-
         public void setState(int state) {
             this.state = state;
         }
+
+        public RecordDto getRecordDto() {return recordDto;}
+        public void setRecordDto(RecordDto recordDto) {this.recordDto = recordDto;}
     }
 
-    @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
-    public @ResponseBody ReturnData BookReadOne(@PathVariable int bookId) {
-        BookDto book = bookMapper.BookReadOne(bookId);
-        var obj = new ReturnData();
 
-        if(book == null) {
-            obj.setSuccess(0);
-            return obj;
-        }
-        obj.setSuccess(1);
-        obj.setBookDto(book);
-        return obj;
-    }
 
     @RequestMapping(value = "api/rental/{bookId}", method = RequestMethod.POST)
     public @ResponseBody ReturnData Rental(@PathVariable int bookId,
                                                      HttpServletRequest httpServletRequest) {
-        BookDto book = bookMapper.BookReadOne(bookId);
+        BookDto book = bookMapper.getSpBook(bookId);
         var obj = new ReturnData();
         int accountId = Integer.parseInt(httpServletRequest.getParameter("accountId"));
         if(accountId == 0) {
@@ -95,7 +86,7 @@ public class RentalController {
         Calendar time = Calendar.getInstance();
         String today = new SimpleDateFormat ( "yyyy-MM-dd").format(time.getTime());
         // 연체기준일
-        int OverdueDate = Integer.parseInt(settingMapper.SettingReadOneWithKeyword("OverdueDate").getValue());
+        int OverdueDate = Integer.parseInt(settingMapper.getSpKeyword("OverdueDate").getValue());
         time.add(Calendar.DATE, OverdueDate);
         // 반납예정일
         String returnDueDate = new SimpleDateFormat ( "yyyy-MM-dd").format(time.getTime());
@@ -107,21 +98,22 @@ public class RentalController {
         }
 
         List<RecordDto> my_record_list = recordMapper.MyRentalList(accountId);  // 아직 반납하지 않고, 연체되지 않은 책 리스트
-        int MaxRentalCount = Integer.parseInt(settingMapper.SettingReadOneWithKeyword("MaxRentalCount").getValue());
+        int MaxRentalCount = Integer.parseInt(settingMapper.getSpKeyword("MaxRentalCount").getValue());
 
-        // 만약 이미 대여한 책이라면 대여가 불가능하다.
-        var my_record_with_bookId_count = recordMapper.MyRecordWithBookIdCount(accountId, bookId);
-        if(my_record_with_bookId_count != 0) {
-            obj.setSuccess(0);
-            obj.setState(100);
-            obj.setMessage("이미 대여하신 책입니다.");
-            return obj;
-        }
+        // 1. 만약 이미 대여한 책이라면 대여가 불가능하다.
+        // => 22.06.02 수정. 이미 대여한 책이면 대여 버튼을 누르지 못한다.
+//        var recent_record = recordMapper.getRecentRecord(accountId, bookId);
+//        if(recent_record == null) {
+//            obj.setSuccess(0);
+//            obj.setRecordDto(recent_record);
+//            obj.setState(100);
+//            obj.setMessage("이미 대여하신 책입니다.");
+//            return obj;
+//        }
 
         // 만약 연체기록이 있다면 빌리지 못한다.
-        int my_over_due_list_count = recordMapper.MyOverDueListCount(accountId);
-        if(my_over_due_list_count > 0) {
-            var my_over_due_list = recordMapper.MyOverDueList(accountId);
+        List<RecordDto> my_over_due_list = recordMapper.MyOverDueList(accountId);
+        if(my_over_due_list.size() > 0) {
             my_over_due_list = my_over_due_list.stream().sorted(Comparator.comparing(RecordDto::getReturnDate).reversed()).collect(Collectors.toList());
             var record = my_over_due_list.get(0);
 
@@ -135,7 +127,6 @@ public class RentalController {
             }
             calendar.add(Calendar.DATE, OverdueDate);
             String rentalOkDate = new SimpleDateFormat ( "yyyy-MM-dd").format(calendar.getTime());
-            System.out.println(rentalOkDate);
             if( today.compareTo(rentalOkDate) < 0) {
                 obj.setSuccess(0);
                 obj.setState(200);
@@ -159,10 +150,10 @@ public class RentalController {
         record.setRentalDate(today);
         record.setReturnDueDate(returnDueDate);
         record.setOverDue(0);
-        recordMapper.RentalInsert(record);
+        recordMapper.AddRentalRecord(record);
 
         // book의 status를 변경한다 (1=>0);
-        BookDto b = bookMapper.BookReadOne(bookId);
+        BookDto b = bookMapper.getSpBook(bookId);
         b.setStatus(0);
         bookMapper.UpdateBook(b);
 

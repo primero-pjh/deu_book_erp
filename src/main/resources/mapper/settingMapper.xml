@@ -7,7 +7,7 @@
     <select id="SettingReadOne" resultType="com.example.bap.dto.SettingDto" parameterType="int">
         select * from settings where settingId=#{settingId}
     </select>
-    <select id="SettingReadOneWithKeyword" resultType="com.example.bap.dto.SettingDto" parameterType="String">
+    <select id="getSpKeyword" resultType="com.example.bap.dto.SettingDto" parameterType="String">
         select * from settings where keyword=#{keyword}
     </select>
     <update id="SettingSave" parameterType="com.example.bap.dto.SettingDto">

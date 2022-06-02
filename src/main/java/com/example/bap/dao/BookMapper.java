@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface BookMapper {
-    public BookDto BookReadOne(int bookId);
+    public BookDto getSpBook(int bookId);
     public List<BookDto> BookReadAll();
     public void UpdateBook(BookDto bookDto);
     public List<BookDto> BookSearch_n(String name);

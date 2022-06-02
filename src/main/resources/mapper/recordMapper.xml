@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.bap.dao.RecordMapper">
-    <insert id="RentalInsert" parameterType="com.example.bap.dto.RecordDto">
+    <insert id="AddRentalRecord" parameterType="com.example.bap.dto.RecordDto">
         insert into records (bookId, accountId, rentalDate, returnDueDate, overDue)
         value(#{bookId},#{accountId},#{rentalDate},#{returnDueDate}, #{overDue})
     </insert>
@@ -10,6 +10,9 @@
     </select>
     <select id="MyRentalDTO" resultType="com.example.bap.dto.RecordDto" parameterType="int">
         select * from records where accountId=#{accountId} and bookId=#{bookId} and (returnDate is null or returnDate = '')
+    </select>
+    <select id="getRecentRecord" resultType="com.example.bap.dto.RecordDto" parameterType="int">
+        select * from records where accountId=#{accountId} and bookId=#{bookId}
     </select>
 
     <select id="MyRecordList" resultType="map" parameterType="int">
@@ -21,9 +24,11 @@
         select count(*) from records where accountId=#{accountId} and bookId=#{bookId} and
                                             (returnDate is null or returnDate = '')
     </select>
-    <select id="MyOverDueListCount" resultType="int" parameterType="int">
-        select count(*) from records where accountId=#{accountId} and overDue=1
+    <select id="MyRecordWithBookId" resultType="com.example.bap.dto.RecordDto" parameterType="int">
+        select * from records where accountId=#{accountId} and bookId=#{bookId} and
+                                            (returnDate is null or returnDate = '')
     </select>
+
     <select id="MyOverDueList" resultType="com.example.bap.dto.RecordDto" parameterType="int">
         select * from records where accountId=#{accountId} and overDue=1
     </select>

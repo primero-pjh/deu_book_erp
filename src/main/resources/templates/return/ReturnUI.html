@@ -39,28 +39,28 @@
         <div v-else>
             <q-card class="my-card">
                 <q-card-section>
-                    <q-img :src="form.image">
+                    <q-img :src="bookInfo.image">
                         <div class="absolute-bottom text-subtitle1 text-center">
                             <div>
-                                도서명: {{form.name}}
+                                도서명: {{bookInfo.name}}
                             </div>
                             <div>
-                                저자: {{form.writer}}
+                                저자: {{bookInfo.writer}}
                             </div>
                             <div>
-                                출판사: {{form.publisher}}
+                                출판사: {{bookInfo.publisher}}
                             </div>
-                            <div>
-                                반납예정일: {{returnDueDateView}}
+                            <div v-if="is_return">
+                                반납예정일: {{returnDueDate}}
                             </div>
                         </div>
                     <q-img>
                 </q-card-section>
             </q-card>
-            <div style="text-align: center;" class="q-mt-sm">
+            <div class="q-mt-sm text-center">
                 <q-btn color="negative" @click="handleReturn" class="q-mr-sm" v-if="is_return==false">반납</q-btn>
                 <q-btn color="primary" @click="location_href('')" class="q-mr-sm">홈화면으로 이동</q-btn>
-                <q-btn @click="location_href('return')">다른 책 반납</q-btn>
+                <q-btn color="white" class="text-black" @click="location_href('return')">다른 책 반납</q-btn>
             </div>
         </div>
     </div>
@@ -77,7 +77,8 @@
                     is_check: false,
                     is_return: false,
                     is_error: false,
-                    form: new Object(),
+                    returnDueDateView: '',
+                    bookInfo: new Object(),
                 }
             },
             methods: {
@@ -87,14 +88,44 @@
                 location_href: function(url) {
                     window.location.href = '/' + url;
                 },
+                load_book: function(bookId) {
+                    var vm = this;
+                    axios.get('/api/book/' + bookId, {
+                        params: {
+
+                        }
+                    }).then(function(res) {
+                        if(res.data.success) {
+                            vm.is_check = true;
+                            for(var k in res.data.bookDto) {
+                                vm.bookInfo[k] = res.data.bookDto[k];
+                            }
+                            console.log(vm.bookInfo);
+                            vm.$q.notify({
+                                type: 'positive',
+                                message: "책 조회 완료",
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                        } else {
+                            vm.$q.notify({
+                                type: 'positive',
+                                message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
+                                position: 'bottom',
+                                timeout: 1000,
+                            });
+                        }
+
+                    });
+                },
 
                 handleReturn: function() {
                     var vm = this;
                     var form_data = new FormData();
                     form_data.append("accountId", vm.$refs.top_menu.account.accountId);
-                    axios.post('/api/return/' + vm.form.bookId, form_data).then(function(res) {
-                        console.log(res.data);
+                    axios.post('/api/return/' + vm.bookInfo.bookId, form_data).then(function(res) {
                         if(res.data.success == 1) {
+                            vm.returnDueDate = res.data.returnDueDate;
                             vm.$q.notify({
                                 type: 'positive',
                                 message: res.data.message,
@@ -127,7 +158,7 @@
                         if(res.data.success) {
                             vm.is_check = true;
                             for(var k in res.data.bookDto) {
-                                vm.form[k] = res.data.bookDto[k];
+                                vm.bookInfo[k] = res.data.bookDto[k];
                             }
                             vm.$q.notify({
                                 type: 'positive',
@@ -205,33 +236,7 @@
                                 return;
                             }
                             if (json_data) {
-                                console.log("json_data:", json_data);
-                                axios.get('/api/book/' + json_data.bookId, {
-                                    params: {
-
-                                    }
-                                }).then(function(res) {
-                                    if(res.data.success) {
-                                        vm.is_check = true;
-                                        for(var k in res.data.bookDto) {
-                                            vm.form[k] = res.data.bookDto[k];
-                                        }
-                                        vm.$q.notify({
-                                            type: 'positive',
-                                            message: "책 조회 완료",
-                                            position: 'bottom',
-                                            timeout: 1000,
-                                        });
-                                    } else {
-                                        vm.$q.notify({
-                                            type: 'positive',
-                                            message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
-                                            position: 'bottom',
-                                            timeout: 1000,
-                                        });
-                                    }
-
-                                });
+                                vm.load_book(json_data.bookId);
                             }
                             return;
                         } else {

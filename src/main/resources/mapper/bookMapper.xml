@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.bap.dao.BookMapper">
-    <select id="BookReadOne" resultType="com.example.bap.dto.BookDto" parameterType="int">
+    <select id="getSpBook" resultType="com.example.bap.dto.BookDto" parameterType="int">
         select * from books where bookId=#{bookId}
     </select>
     <select id="BookReadAll" resultType="com.example.bap.dto.BookDto">

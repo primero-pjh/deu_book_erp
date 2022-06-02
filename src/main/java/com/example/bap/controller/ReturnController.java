@@ -30,17 +30,12 @@ public class ReturnController {
     @Autowired
     private SettingMapper settingMapper;
 
-//    @RequestMapping(value = "api/setting", method = RequestMethod.GET)
-//    public @ResponseBody List<SettingDto> SettingReadAll() {
-//        List<SettingDto> setting_list = settingMapper.SettingReadAll();
-//        return setting_list;
-//    }
-
-    public class JsonResult {
+    public class ReturnData {
         public int success;
         public BookDto bookDto;
         public int state;
         public String message;
+        public String returnDueDate;
 
         public int getSuccess() {
             return success;
@@ -60,16 +55,18 @@ public class ReturnController {
         public int getState() {
             return state;
         }
-
         public void setState(int state) {
             this.state = state;
         }
+
+        public String getReturnDueDate() {return returnDueDate; }
+        public void setReturnDueDate(String returnDueDate) { this.returnDueDate = returnDueDate; }
     }
 
     @RequestMapping(value = "api/return/{bookId}", method = RequestMethod.POST)
-    public @ResponseBody JsonResult Return(@PathVariable int bookId,
+    public @ResponseBody ReturnData Return(@PathVariable int bookId,
                                                      HttpServletRequest httpServletRequest) {
-        var obj = new JsonResult();
+        var obj = new ReturnData();
         int accountId = Integer.parseInt(httpServletRequest.getParameter("accountId"));
         if(accountId == 0) {
             obj.setSuccess(0);
@@ -80,12 +77,12 @@ public class ReturnController {
         Calendar time = Calendar.getInstance();
         String today = new SimpleDateFormat ( "yyyy-MM-dd").format(time.getTime());
         // 연체기준일
-        int OverdueDate = Integer.parseInt(settingMapper.SettingReadOneWithKeyword("OverdueDate").getValue());
+        int OverdueDate = Integer.parseInt(settingMapper.getSpKeyword("OverdueDate").getValue());
         time.add(Calendar.DATE, OverdueDate);
         // 반납예정일
         String returnDueDate = new SimpleDateFormat ( "yyyy-MM-dd").format(time.getTime());
 
-        BookDto book = bookMapper.BookReadOne(bookId);
+        BookDto book = bookMapper.getSpBook(bookId);
         if(book == null) {
             obj.setSuccess(0);
             obj.setMessage("해당 책은 존재하지 않습니다. 확인 후 다시 시도해주세요.");
@@ -93,8 +90,8 @@ public class ReturnController {
         }
 
         // 1. 만약 대여하지 않은 책이면 반납할 수 없다.
-        var count = recordMapper.MyRecordWithBookIdCount(accountId, bookId);
-        if(count == 0) {
+        var return_record = recordMapper.MyRecordWithBookId(accountId, bookId);
+        if(return_record == null) {
             obj.setSuccess(0);
             obj.setMessage("해당 책은 반납되었거나, 대여한 책이 아닙니다. 확인 후 다시 시도하세요.");
             return obj;
@@ -118,12 +115,13 @@ public class ReturnController {
         }
 
         // book의 status를 변경한다 (0=>1);
-        BookDto b = bookMapper.BookReadOne(bookId);
+        BookDto b = bookMapper.getSpBook(bookId);
         b.setStatus(1);
         bookMapper.UpdateBook(b);
 
         obj.setSuccess(1);
-        obj.setMessage("반납완료");
+        obj.setReturnDueDate(return_due_date);
+        obj.setMessage("성공적으로 반납하였습니다.");
         return obj;
     }
 }
