@@ -91,6 +91,24 @@
                     window.location.href = '/' + url;
                 },
 
+                successMessage: function(message) {
+                    var vm = this;
+                    vm.$q.notify({
+                        type: 'positive',
+                        message: message,
+                        position: 'bottom',
+                        timeout: 1000,
+                    });
+                },
+                failMessage: function(message) {
+                    vm.$q.notify({
+                        type: 'negative',
+                        message: message,
+                        position: 'bottom',
+                        timeout: 1000,
+                    });
+                },
+
                 load_book: function(bookId) {
                     var vm = this;
                     axios.get('/api/book/' + bookId, {
@@ -104,23 +122,12 @@
                                 vm.bookInfo[k] = res.data.bookDto[k];
                             }
                             var today = new Date();
-                            vm.returnDueDateView = $p.formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7));
-
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: "책 조회 완료",
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.returnDueDateView = 
+                            $p.formatDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7));
+                            vm.successMessage(res.data.message);
                         } else {
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.failMessage(res.data.message);
                         }
-
                     });
                 },
 
@@ -128,29 +135,13 @@
                     var vm = this;
                     var form_data = new FormData();
                     form_data.append("accountId", vm.$refs.top_menu.account.accountId);
-                    axios.post('/api/rental/' + vm.bookInfo.bookId, form_data).then(function(res) {
+                    axios.post('/api/rental/' + vm.bookInfo.bookId, form_data)
+                    .then(function(res) {
                         if(res.data.success == 1) {
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: res.data.message,
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.successMessage(res.data.message);
                             vm.is_rental = true;
                         } else {
-                            if(res.data.state == 200) {
-                                // 연체 후 7일이 경과되지 않았다면,
-                            } else if(res.data.state == 300) {
-                                // 3권 이상을 대여 중인 회원이라면
-                            } else {
-
-                            }
-                            vm.$q.notify({
-                                type: 'negative',
-                                message: res.data.message,
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.failMessage(res.data.message);
                         }
                     });
                 },

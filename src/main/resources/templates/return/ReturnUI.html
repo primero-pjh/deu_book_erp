@@ -19,18 +19,15 @@
             <div id="test" style="display: none;">
                 <h1>QR 코드 리더</h1>
                 <div id="output">
-                    <div id="outputMessage">
-                        QR코드를 카메라에 노출시켜 주세요
-                    </div>
-                    <div id="outputLayer" hidden>
-                        <span id="outputData"></span>
-                    </div>
+                    <div id="outputMessage">QR코드를 카메라에 노출시켜 주세요</div>
+                    <div id="outputLayer" hidden><span id="outputData"></span></div>
                 </div>
             </div>
             <div style="width:100%;">
                 <div id="frame" style="position:relative;">
                     <div id="loadingMessage"
-                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                        style="position: absolute; top: 50%; left: 50%; 
+                        transform: translate(-50%, -50%);">
                     </div>
                     <canvas id="canvas" style="width: 100%;"></canvas>
                 </div>
@@ -41,18 +38,10 @@
                 <q-card-section>
                     <q-img :src="bookInfo.image">
                         <div class="absolute-bottom text-subtitle1 text-center">
-                            <div>
-                                도서명: {{bookInfo.name}}
-                            </div>
-                            <div>
-                                저자: {{bookInfo.writer}}
-                            </div>
-                            <div>
-                                출판사: {{bookInfo.publisher}}
-                            </div>
-                            <div v-if="is_return">
-                                반납예정일: {{returnDueDate}}
-                            </div>
+                            <div>도서명: {{bookInfo.name}}</div>
+                            <div>저자: {{bookInfo.writer}}</div>
+                            <div>출판사: {{bookInfo.publisher}}</div>
+                            <div v-if="is_return">반납예정일: {{returnDueDate}}</div>
                         </div>
                     <q-img>
                 </q-card-section>
@@ -88,6 +77,25 @@
                 location_href: function(url) {
                     window.location.href = '/' + url;
                 },
+
+                successMessage: function(message) {
+                    var vm = this;
+                    vm.$q.notify({
+                        type: 'positive',
+                        message: message,
+                        position: 'bottom',
+                        timeout: 1000,
+                    });
+                },
+                failMessage: function(message) {
+                    var vm = this;
+                    vm.$q.notify({
+                        type: 'negative',
+                        message: message,
+                        position: 'bottom',
+                        timeout: 1000,
+                    });
+                },
                 load_book: function(bookId) {
                     var vm = this;
                     axios.get('/api/book/' + bookId, {
@@ -100,20 +108,9 @@
                             for(var k in res.data.bookDto) {
                                 vm.bookInfo[k] = res.data.bookDto[k];
                             }
-                            console.log(vm.bookInfo);
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: "책 조회 완료",
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.successMessage(res.data.message);
                         } else {
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: "해당 책은 존재하지 않거나, 도서관에 없는 책입니다.",
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.failMessage(res.data.message);
                         }
 
                     });
@@ -126,20 +123,10 @@
                     axios.post('/api/return/' + vm.bookInfo.bookId, form_data).then(function(res) {
                         if(res.data.success == 1) {
                             vm.returnDueDate = res.data.returnDueDate;
-                            vm.$q.notify({
-                                type: 'positive',
-                                message: res.data.message,
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.successMessage(res.data.message);
                             vm.is_return = true;
                         } else {
-                            vm.$q.notify({
-                                type: 'negative',
-                                message: res.data.message,
-                                position: 'bottom',
-                                timeout: 1000,
-                            });
+                            vm.failMessage(res.data.message);
                         }
                     });
                 },

@@ -292,19 +292,6 @@
                         vm.record_list = row;
                     } else {
                         vm.record_list = [];
-                        if(data.error) {
-                            for(var k in data.error) {
-                                vm.form_error[k] = data.error[k];
-                            }
-                        }
-                        if(data.message) {
-                            vm.$q.dialog({
-                                title: '에러',
-                                message: data.message
-                            }).onOk(() => {
-
-                            });
-                        }
                     }
                 });
             },

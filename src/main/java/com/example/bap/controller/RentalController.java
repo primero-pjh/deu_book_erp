@@ -58,12 +58,8 @@ public class RentalController {
         public String getMessage() {return message;}
         public void setMessage(String message) {this.message = message;}
 
-        public int getState() {
-            return state;
-        }
-        public void setState(int state) {
-            this.state = state;
-        }
+        public int getState() { return state; }
+        public void setState(int state) { this.state = state; }
 
         public RecordDto getRecordDto() {return recordDto;}
         public void setRecordDto(RecordDto recordDto) {this.recordDto = recordDto;}

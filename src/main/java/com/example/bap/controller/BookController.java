@@ -42,9 +42,11 @@ public class BookController {
 
         if(book == null) {
             obj.setSuccess(0);
+            obj.setMessage("올바르지 않은 QR코드 이거나 존재하지 않는 책입니다. 확인 후 다시 시도하세요.");
             return obj;
         }
         obj.setSuccess(1);
+        obj.setMessage("도서 조회 완료!");
         obj.setBookDto(book);
         return obj;
     }

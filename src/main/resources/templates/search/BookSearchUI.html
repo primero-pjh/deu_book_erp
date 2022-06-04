@@ -163,8 +163,7 @@
                 var vm = this;
                 axios.get('/api/search', {
                     params: {
-                        type: vm.search_type,
-                        value: vm.searchTitle,
+                        type: vm.search_type, value: vm.searchTitle,
                     }
                 }).then(function(res) {
                     var data = res.data;
@@ -198,12 +197,7 @@
                         }
                         vm.book_list = row;
                     } else {
-                        vm.$q.notify({
-                            type: 'negative',
-                            message: data.message,
-                            position: 'bottom',
-                            timeout: 1000,
-                        });
+                        vm.book_list;
                     }
                     vm.$q.loading.hide();
                 });
