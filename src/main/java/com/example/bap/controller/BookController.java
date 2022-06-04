@@ -38,6 +38,7 @@ public class BookController {
     @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
     public @ResponseBody ReturnData getSpBook(@PathVariable int bookId) {
         var obj = new ReturnData();
+        bookId = 0;
         BookDto book = bookMapper.getSpBook(bookId);
 
         if(book == null) {

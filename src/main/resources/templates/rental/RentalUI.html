@@ -58,9 +58,8 @@
                 </q-card-section>
             </q-card>
             <div style="text-align: center;" class="q-mt-sm">
-                <q-btn color="primary" class="q-mr-sm" v-if="!bookInfo.status">대여불가능</q-btn>
-                <q-btn color="primary" @click="handleRental" class="q-mr-sm" :disable="!bookInfo.status"
-                       v-if="is_rental==false">대여</q-btn>
+                <q-btn color="negative" class="q-mr-sm" v-if="!bookInfo.status">대여불가능</q-btn>
+                <q-btn color="primary" @click="handleRental" class="q-mr-sm" v-if="is_rental==false && bookInfo.status">대여</q-btn>
                 <q-btn color="primary" @click="location_href('')" class="q-mr-sm" v-else>홈화면으로 이동</q-btn>
                 <q-btn @click="reload">다른 책 대여</q-btn>
             </div>
@@ -101,6 +100,7 @@
                     });
                 },
                 failMessage: function(message) {
+                    var vm = this;
                     vm.$q.notify({
                         type: 'negative',
                         message: message,
