@@ -168,13 +168,15 @@
                 var vm = this;
                 axios.get('/api/search', {
                     params: {
-                        type: vm.search_type, value: vm.searchTitle,
+                        type: vm.search_type,
+                        value: vm.searchTitle,
                     }
                 }).then(function(res) {
                     var data = res.data;
                     if(data.success) {
                         vm.book_list = data.bookList;
                     } else {
+                        // 사용안함을 클릭하고 조회를 했을 때
                         vm.load_book_list();
                     }
 

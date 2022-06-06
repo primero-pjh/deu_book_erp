@@ -38,7 +38,6 @@ public class BookController {
     @RequestMapping(value = "api/book/{bookId}", method = RequestMethod.GET)
     public @ResponseBody ReturnData getSpBook(@PathVariable int bookId) {
         var obj = new ReturnData();
-        bookId = 0;
         BookDto book = bookMapper.getSpBook(bookId);
 
         if(book == null) {
@@ -70,26 +69,13 @@ public class BookController {
     public @ResponseBody ReturnData getFilterBookList(@RequestParam(value="type") String type,
                                                       @RequestParam(value="value") String value) {
         ReturnData obj = new ReturnData();
-        System.out.println(type);
-        System.out.println(value);
         List<BookDto> book_list = null;
+        // 만약 사용안함 을 체크하고 검색을 했을 때
         if(type.equals("none")) {
             obj.setSuccess(0);
             return obj;
         }
-        if(type.equals("name")){
-            System.out.println("?");
-            book_list = bookMapper.BookSearch_n(value);
-
-        } else if(type=="category"){
-            book_list = bookMapper.BookSearch_c(value);
-
-        } else if(type=="writer"){
-            book_list = bookMapper.BookSearch_w(value);
-
-        } else if(type=="description"){
-            book_list = bookMapper.BookSearch_d(value);
-        }
+        book_list = bookMapper.BookSearch(type, value);
         obj.setSuccess(1);
         obj.setBookList(book_list);
         return obj;

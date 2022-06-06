@@ -11,16 +11,29 @@
         update books set status=#{status} where bookId=#{bookId}
     </update>
 
-    <select id="BookSearch_n" resultType="com.example.bap.dto.BookDto" parameterType="String">
-        select * from books where name like CONCAT('%', #{name}, '%')
-    </select>
-    <select id="BookSearch_c" resultType="com.example.bap.dto.BookDto" parameterType="String">
-        select * from books where category=#{category}
-    </select>
-    <select id="BookSearch_d" resultType="com.example.bap.dto.BookDto" parameterType="String">
-        select * from books where description=#{description}
-    </select>
-    <select id="BookSearch_w" resultType="com.example.bap.dto.BookDto" parameterType="String">
-        select * from books where writer=#{writer}
+    <select id="BookSearch" resultType="com.example.bap.dto.BookDto" parameterType="String">
+        select *
+        from books
+        where
+        <if test='type == "name"'>
+            <![CDATA[
+            name like CONCAT('%', #{value}, '%')
+        ]]>
+        </if>
+        <if test='type == "writer"'>
+            <![CDATA[
+            writer like CONCAT('%', #{value}, '%')
+        ]]>
+        </if>
+        <if test='type == "category"'>
+            <![CDATA[
+            category like CONCAT('%', #{value}, '%')
+        ]]>
+        </if>
+        <if test='type == "publisher"'>
+            <![CDATA[
+            publisher like CONCAT('%', #{value}, '%')
+        ]]>
+        </if>
     </select>
 </mapper>

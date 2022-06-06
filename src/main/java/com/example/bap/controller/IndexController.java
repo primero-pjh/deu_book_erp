@@ -15,39 +15,18 @@ public class IndexController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String renderMainPage() { return "MainUI"; }
-
     @RequestMapping(value = "/rental", method = RequestMethod.GET)
-    public String renderRentalPage() {
-        return "rental/RentalUI";
-    }
-
+    public String renderRentalPage() { return "rental/RentalUI";}
     @RequestMapping(value = "/return", method = RequestMethod.GET)
-    public String renderReturnPage() {
-        return "return/ReturnUI";
-    }
-
+    public String renderReturnPage() { return "return/ReturnUI";}
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String renderLoginPage() {
-        return "login/LoginUI";
-    }
-
+    public String renderLoginPage() { return "login/LoginUI";}
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
-    public String renderSignUpPage() {
-        return "signup/signup";
-    }
-
+    public String renderSignUpPage() { return "signup/signup";}
     @RequestMapping(value = "/myPage", method = RequestMethod.GET)
-    public String rendermyPage() {
-        return "myPage/myPageUI";
-    }
-
+    public String rendermyPage() { return "myPage/myPageUI";}
     @RequestMapping(value = "/setting", method = RequestMethod.GET)
-    public String renderadminPage() {
-        return "setting/AdminPageUI";
-    }
-
+    public String renderadminPage() { return "setting/AdminPageUI"; }
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String rendersearchPage() {
-        return "search/BookSearchUI";
-    }
+    public String rendersearchPage() { return "search/BookSearchUI"; }
 }

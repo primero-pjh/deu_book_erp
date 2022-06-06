@@ -11,8 +11,5 @@ public interface BookMapper {
     public BookDto getSpBook(int bookId);
     public List<BookDto> BookReadAll();
     public void UpdateBook(BookDto bookDto);
-    public List<BookDto> BookSearch_n(String name);
-    public List<BookDto> BookSearch_c(String category);
-    public List<BookDto> BookSearch_d(String publisher);
-    public List<BookDto> BookSearch_w(String writer);
+    public List<BookDto> BookSearch(String type, String value);
 }
