@@ -75,6 +75,7 @@ public class BookController {
             obj.setSuccess(0);
             return obj;
         }
+        // type(도서명, 저자, 출판사, 도서종류), value(사용자가 입력한 값)
         book_list = bookMapper.BookSearch(type, value);
         obj.setSuccess(1);
         obj.setBookList(book_list);

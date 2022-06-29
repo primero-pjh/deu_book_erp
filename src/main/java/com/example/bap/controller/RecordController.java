@@ -77,8 +77,11 @@ public class RecordController {
                                                      @RequestParam(value="endDate") String endDate,
                                                      @RequestParam(value="type") String type) {
         var obj = new ReturnData();
+        // 나의 이용내역 중 startDate, endDate에 포함되는 이용내역만을 들고온다.
+        // type: 대여일 기준, 반납일 기준
         List<Map<String, Object>> filter_my_record_list = recordMapper.MyFilterRecordList(accountId, startDate, endDate, type);
 
+        // 빈 배열이라면 success = 0 으로 설정한다.
         if(filter_my_record_list.size() == 0) {
             obj.setSuccess(0);
             return obj;

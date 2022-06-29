@@ -166,6 +166,8 @@
         methods: {
             filter_book_list: function() {
                 var vm = this;
+                // 사용자가 검색 조건을 입력하고 조회 버튼을 눌렀을 때
+                // 제어클래스 BookController의 getFilterBookList() 호출
                 axios.get('/api/search', {
                     params: {
                         type: vm.search_type,
@@ -187,6 +189,7 @@
                 vm.best_list = [];
                 vm.book_list = [];
                 vm.$q.loading.show();
+                // 제어클래스 BookController의 getSpBook() 호출
                 axios.get('/api/book', {
                     params: {
 
@@ -204,7 +207,7 @@
                         }
                         vm.book_list = row;
                     } else {
-                        vm.book_list;
+                        vm.book_list = [];
                     }
                     vm.$q.loading.hide();
                 });

@@ -98,18 +98,22 @@
                 },
                 load_book: function(bookId) {
                     var vm = this;
+                    // 제어 클래스의 BookController getSpBook() 호출
                     axios.get('/api/book/' + bookId, {
                         params: {
 
                         }
                     }).then(function(res) {
                         if(res.data.success) {
+                            // 도서를 성공적으로 읽어왔다면 해당 도서를 bookInfo 변수에 할당
                             vm.is_check = true;
                             for(var k in res.data.bookDto) {
                                 vm.bookInfo[k] = res.data.bookDto[k];
                             }
+                            // 성공메시지 출력
                             vm.successMessage(res.data.message);
                         } else {
+                            // 실패메시지 출력
                             vm.failMessage(res.data.message);
                         }
 
@@ -120,12 +124,15 @@
                     var vm = this;
                     var form_data = new FormData();
                     form_data.append("accountId", vm.$refs.top_menu.account.accountId);
+                    // 제어 클래스의 ReturnController Return() 호출
                     axios.post('/api/return/' + vm.bookInfo.bookId, form_data).then(function(res) {
                         if(res.data.success == 1) {
                             vm.returnDueDate = res.data.returnDueDate;
+                            // 성공메시지 출력
                             vm.successMessage(res.data.message);
                             vm.is_return = true;
                         } else {
+                            // 실패메시지 출력
                             vm.failMessage(res.data.message);
                         }
                     });

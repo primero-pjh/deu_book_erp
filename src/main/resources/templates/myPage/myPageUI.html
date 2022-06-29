@@ -276,6 +276,7 @@
             load_filter_my_record_list: function() {
                 var vm = this;
                 var accountId = vm.$refs.top_menu.account.accountId;
+                // 제어 클래스 RecordController의 getFilterMyRecordList() 호출
                 axios.get('/api/filterMyRecord/' + accountId, {
                     params: {
                         startDate: vm.start_date,
@@ -291,6 +292,7 @@
                         var row = data.recordList;
                         vm.record_list = row;
                     } else {
+                        // 값이 없다면 빈 목록을 출력한다.
                         vm.record_list = [];
                     }
                 });
